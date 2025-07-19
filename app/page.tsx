@@ -51,7 +51,7 @@ export default function Home() {
                   onClick={() => setTheme(theme.id)}
                   className={`px-3 py-1 text-sm rounded transition-all ${
                     currentTheme.id === theme.id
-                      ? 'ring-2'
+                      ? 'ring-2 ring-offset-2'
                       : ''
                   }`}
                   style={{
@@ -61,7 +61,7 @@ export default function Home() {
                     color: currentTheme.id === theme.id
                       ? currentTheme.colors.background
                       : currentTheme.colors.foreground,
-                    ringColor: currentTheme.colors.primary,
+                    outlineColor: currentTheme.colors.primary,
                   }}
                 >
                   {theme.name}
