@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Notion Widgets Gallery
 
-## Getting Started
+Beautiful embeddable widgets for your Notion pages with minimalist design and theme support.
 
-First, run the development server:
+## 🎨 Features
+
+- **Widget Collection**: Clock, Calendar, Weather, and Year Progress widgets
+- **Theme System**: Multiple themes including Monochrome, Dark, and Minimal
+- **Notion-Optimized**: Widgets sized perfectly for Notion embed blocks
+- **Easy Sharing**: One-click URL copy for embedding in Notion
+- **Responsive Design**: Works on all screen sizes
+
+## 🚀 Live Demo
+
+Visit the live site: [https://coldwoong-moon.github.io/notion-widgets](https://coldwoong-moon.github.io/notion-widgets)
+
+## 📦 Available Widgets
+
+1. **Clock** - Minimalist digital clock with seconds
+2. **Calendar** - Clean monthly calendar view with current day highlight
+3. **Weather** - Simple weather display (demo data)
+4. **Year Progress** - Visual progress bars for year, month, and day
+
+## 🎯 How to Use
+
+1. Visit the [widget gallery](https://coldwoong-moon.github.io/notion-widgets)
+2. Choose a theme from the header
+3. Click "Copy Widget URL" on any widget
+4. In Notion, type `/embed` and paste the URL
+5. Adjust the embed size as needed
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/coldwoong-moon/notion-widgets.git
+cd notion-widgets
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+## 🚢 Deployment
 
-To learn more about Next.js, take a look at the following resources:
+This project is automatically deployed to GitHub Pages using GitHub Actions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Enable GitHub Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Go to your repository settings
+2. Navigate to "Pages" section
+3. Under "Build and deployment":
+   - Source: "GitHub Actions"
 
-## Deploy on Vercel
+The site will be automatically deployed when you push to the `main` branch.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Adding New Widgets
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a new widget component in `components/widgets/`
+2. Add the widget to the registry in `lib/widgets.ts`
+3. The widget will automatically appear in the gallery
+
+Example widget structure:
+```tsx
+export function MyWidget({ theme }: { theme: Theme }) {
+  return (
+    <div style={{ 
+      backgroundColor: theme.colors.background,
+      color: theme.colors.foreground 
+    }}>
+      {/* Your widget content */}
+    </div>
+  );
+}
+```
+
+## 🎨 Creating New Themes
+
+Add new themes in `lib/themes/index.ts`:
+
+```typescript
+export const themes: Record<string, Theme> = {
+  myTheme: {
+    id: 'myTheme',
+    name: 'My Theme',
+    colors: {
+      background: '#ffffff',
+      foreground: '#000000',
+      // ... other colors
+    },
+    // ... typography settings
+  }
+};
+```
+
+## 📄 License
+
+MIT License
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+Made with ❤️ for Notion users
