@@ -38,35 +38,39 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <span
-                className="text-sm mr-2"
+                className="text-sm"
                 style={{ color: currentTheme.colors.secondary }}
               >
                 Theme:
               </span>
-              {availableThemes.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => setTheme(theme.id)}
-                  className={`px-3 py-1 text-sm rounded transition-all ${
-                    currentTheme.id === theme.id
-                      ? 'ring-2 ring-offset-2'
-                      : ''
-                  }`}
-                  style={{
-                    backgroundColor: currentTheme.id === theme.id
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.muted,
-                    color: currentTheme.id === theme.id
-                      ? currentTheme.colors.background
-                      : currentTheme.colors.foreground,
-                    outlineColor: currentTheme.colors.primary,
-                  }}
-                >
-                  {theme.name}
-                </button>
-              ))}
+              <div className="flex flex-wrap gap-2">
+                {availableThemes.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => setTheme(theme.id)}
+                    className={`px-4 py-2 text-xs rounded-lg transition-all ${
+                      currentTheme.id === theme.id
+                        ? 'scale-105'
+                        : 'hover:scale-105'
+                    }`}
+                    style={{
+                      backgroundColor: currentTheme.id === theme.id
+                        ? currentTheme.colors.primary
+                        : currentTheme.colors.muted,
+                      color: currentTheme.id === theme.id
+                        ? currentTheme.colors.background
+                        : currentTheme.colors.foreground,
+                      border: currentTheme.id === theme.id
+                        ? '2px solid transparent'
+                        : `2px solid ${currentTheme.colors.border}`,
+                    }}
+                  >
+                    {theme.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

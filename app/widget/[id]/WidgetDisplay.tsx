@@ -29,8 +29,20 @@ export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
 
   const WidgetComponent = widget.component;
 
+  const isGlassmorphism = theme.id.includes('glassmorphism');
+
   return (
-    <div className="w-full h-screen">
+    <div 
+      className="w-full overflow-hidden"
+      style={{ 
+        height: `${widget.defaultSize.height}px`,
+        minHeight: `${widget.defaultSize.height}px`,
+        maxHeight: `${widget.defaultSize.height}px`,
+        ...(isGlassmorphism && {
+          backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        }),
+      }}
+    >
       <WidgetComponent theme={theme} />
     </div>
   );

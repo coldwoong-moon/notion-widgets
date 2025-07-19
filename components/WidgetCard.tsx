@@ -28,16 +28,25 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
 
   return (
     <div
-      className="border rounded-lg overflow-hidden transition-all hover:shadow-lg"
-      style={{ borderColor: theme.colors.border }}
+      className="group border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
+      style={{ 
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
+      }}
     >
       <div
-        className="aspect-video relative overflow-hidden"
-        style={{ backgroundColor: theme.colors.muted }}
+        className="relative overflow-hidden"
+        style={{ 
+          aspectRatio: `${widget.defaultSize.width} / ${widget.defaultSize.height}`,
+          backgroundColor: theme.colors.background,
+        }}
       >
-        <div className="absolute inset-0 scale-75">
+        <div className="absolute inset-0 pointer-events-none">
           <WidgetComponent theme={theme} />
         </div>
+        <div 
+          className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        />
       </div>
       
       <div

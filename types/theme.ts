@@ -20,6 +20,12 @@ export interface Theme {
       xl: string;
     };
   };
+  styles?: {
+    boxShadow?: string;
+    borderRadius?: string;
+    backdropFilter?: string;
+    backgroundImage?: string;
+  };
 }
 
 export interface Widget {
