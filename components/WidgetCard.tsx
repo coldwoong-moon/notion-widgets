@@ -6,6 +6,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Copy, Check, Settings } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface WidgetCardProps {
   widget: Widget;
@@ -45,75 +46,76 @@ export function WidgetCard({ widget, theme, baseUrl, onCustomize }: WidgetCardPr
 
   return (
     <Card 
-      className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+      className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border-2 hover:border-primary/20"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Widget Preview */}
-      <div className="relative h-40 bg-muted overflow-hidden">
+      {/* Widget Preview - 실제 위젯이 잘 보이도록 */}
+      <div className="relative h-52 bg-white dark:bg-slate-950 overflow-hidden border-b">
         {/* Animated gradient background on hover */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 transition-opacity duration-300 ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}
         />
         
-        {/* Scale the widget to fit */}
-        <div className="absolute inset-0 flex items-center justify-center scale-50">
-          <div className="w-[200%] h-[200%] flex items-center justify-center">
+        {/* Scale the widget to fit - 더 크게 표시 */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <div className="transform scale-75 origin-center">
             <WidgetComponent theme={theme} />
           </div>
         </div>
         
         {/* Category badge */}
-        <div className="absolute top-2 right-2">
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-background/80 backdrop-blur-sm">
+        <div className="absolute top-2 right-2 z-10">
+          <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary">
             {widget.category}
           </span>
         </div>
       </div>
       
-      <CardHeader className="p-4 pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <span className="text-xl">{widget.icon}</span>
-            {widget.name}
-          </CardTitle>
-        </div>
-        <CardDescription className="text-xs">
+      <CardHeader className="p-4 pb-3">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <span className="text-xl">{widget.icon}</span>
+          {widget.name}
+        </CardTitle>
+        <CardDescription className="text-xs mt-1 line-clamp-2">
           {widget.description}
         </CardDescription>
       </CardHeader>
       
-      <CardFooter className="p-4 pt-2 gap-2">
-        <Button
-          onClick={handleCopy}
-          size="sm"
-          className="flex-1"
-          variant={copied ? "default" : "outline"}
-        >
-          {copied ? (
-            <>
-              <Check className="h-3 w-3" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="h-3 w-3" />
-              Copy URL
-            </>
-          )}
-        </Button>
+      <CardFooter className="p-4 pt-0 gap-2">
         {onCustomize && (
           <Button
             onClick={handleCustomize}
             size="sm"
             variant="ghost"
-            className="px-2"
+            className="p-2"
           >
-            <Settings className="h-3 w-3" />
+            <Settings className="h-4 w-4" />
           </Button>
         )}
+        <Button
+          onClick={handleCopy}
+          size="sm"
+          className={cn(
+            "flex-1 font-medium transition-all",
+            copied && "bg-green-600 hover:bg-green-700 text-white"
+          )}
+          variant="default"
+        >
+          {copied ? (
+            <>
+              <Check className="h-4 w-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4" />
+              Copy URL
+            </>
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );
