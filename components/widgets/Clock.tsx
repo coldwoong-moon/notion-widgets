@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
+import { WidgetContainer } from './WidgetContainer';
 
 interface ClockProps {
   theme: Theme;
@@ -9,8 +10,10 @@ interface ClockProps {
 
 export function Clock({ theme }: ClockProps) {
   const [time, setTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => {
       setTime(new Date());
     }, 1000);
@@ -18,12 +21,22 @@ export function Clock({ theme }: ClockProps) {
     return () => clearInterval(timer);
   }, []);
 
+  if (!mounted) {
+    return (
+      <WidgetContainer theme={theme} minHeight={280}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="text-6xl" style={{ opacity: 0.1 }}>--:--:--</div>
+        </div>
+      </WidgetContainer>
+    );
+  }
+
   const hours = time.getHours().toString().padStart(2, '0');
   const minutes = time.getMinutes().toString().padStart(2, '0');
   const seconds = time.getSeconds().toString().padStart(2, '0');
   
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   
   const dayName = dayNames[time.getDay()];
   const date = time.getDate();
@@ -31,74 +44,113 @@ export function Clock({ theme }: ClockProps) {
   const year = time.getFullYear();
 
   return (
-    <div
-      className="flex items-center justify-center h-full p-6 relative overflow-hidden"
-      style={{
-        backgroundColor: theme.colors.background,
-        color: theme.colors.foreground,
-        fontFamily: theme.typography.fontFamily,
-      }}
-    >
-      {/* Background Effect */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full"
-          style={{
-            background: `radial-gradient(circle, ${theme.colors.accent} 0%, transparent 70%)`,
-          }}
-        />
-      </div>
-      
-      <div className="relative z-10 text-center">
+    <WidgetContainer theme={theme} minHeight={280}>
+      <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        position: 'relative',
+      }}>
+        {/* Background decoration */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0.05,
+          background: `radial-gradient(circle at center, ${theme.colors.accent} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+        }} />
+        
         {/* Time Display */}
-        <div className="mb-4">
-          <div className="flex items-center justify-center gap-2 text-5xl font-light tracking-wider">
-            <span className="inline-block min-w-[60px] tabular-nums animate-fade-in" key={hours}>
-              {hours}
-            </span>
-            <span className="animate-pulse">:</span>
-            <span className="inline-block min-w-[60px] tabular-nums animate-fade-in" key={minutes}>
-              {minutes}
-            </span>
-            <span className="animate-pulse">:</span>
-            <span className="inline-block min-w-[60px] tabular-nums animate-fade-in text-3xl opacity-60" key={seconds}>
-              {seconds}
-            </span>
-          </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'center',
+          gap: '4px',
+          marginBottom: '16px',
+          fontFamily: '"SF Mono", Monaco, "Cascadia Code", monospace',
+          fontWeight: '300',
+          letterSpacing: '-0.02em',
+        }}>
+          <span className="text-6xl" style={{
+            minWidth: '1.2em',
+            textAlign: 'center',
+            transition: 'all 0.3s ease',
+            color: theme.colors.primary,
+          }}>
+            {hours}
+          </span>
+          <span className="text-5xl" style={{
+            color: theme.colors.primary,
+            opacity: 0.4,
+            animation: 'pulse 2s ease-in-out infinite',
+          }}>
+            :
+          </span>
+          <span className="text-6xl" style={{
+            minWidth: '1.2em',
+            textAlign: 'center',
+            transition: 'all 0.3s ease',
+            color: theme.colors.primary,
+          }}>
+            {minutes}
+          </span>
+          <span className="text-5xl" style={{
+            color: theme.colors.primary,
+            opacity: 0.4,
+            animation: 'pulse 2s ease-in-out infinite',
+          }}>
+            :
+          </span>
+          <span className="text-4xl" style={{
+            minWidth: '1.2em',
+            textAlign: 'center',
+            transition: 'all 0.3s ease',
+            color: theme.colors.secondary,
+            opacity: 0.7,
+          }}>
+            {seconds}
+          </span>
         </div>
         
         {/* Date Display */}
-        <div className="space-y-1">
-          <div
-            className="text-sm font-medium opacity-80"
-            style={{ color: theme.colors.secondary }}
-          >
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '4px',
+        }}>
+          <div className="text-lg" style={{
+            color: theme.colors.secondary,
+            fontWeight: '500',
+            letterSpacing: '0.05em',
+          }}>
             {dayName}
           </div>
-          <div
-            className="text-xs opacity-60"
-            style={{ color: theme.colors.secondary }}
-          >
+          <div className="text-sm" style={{
+            color: theme.colors.secondary,
+            opacity: 0.7,
+            letterSpacing: '0.02em',
+          }}>
             {month} {date}, {year}
           </div>
         </div>
+
+        {/* Time zone indicator */}
+        <div className="text-xs" style={{
+          position: 'absolute',
+          bottom: '16px',
+          right: '16px',
+          color: theme.colors.muted,
+          opacity: 0.5,
+          fontFamily: 'system-ui',
+        }}>
+          {Intl.DateTimeFormat().resolvedOptions().timeZone}
+        </div>
       </div>
-      
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
-    </div>
+    </WidgetContainer>
   );
 }

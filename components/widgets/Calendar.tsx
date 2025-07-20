@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
+import { WidgetContainer } from './WidgetContainer';
 
 interface CalendarProps {
   theme: Theme;
@@ -9,6 +10,19 @@ interface CalendarProps {
 
 export function Calendar({ theme }: CalendarProps) {
   const [currentDate] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <WidgetContainer theme={theme} minHeight={280}>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading...</div>
+      </WidgetContainer>
+    );
+  }
   
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -33,86 +47,149 @@ export function Calendar({ theme }: CalendarProps) {
     weeks.push(days.slice(i, i + 7));
   }
 
-  const isNeumorphism = theme.id.includes('neumorphism');
-  const isGlassmorphism = theme.id.includes('glassmorphism');
-
   return (
-    <div
-      className="flex items-center justify-center h-full p-6"
-      style={{
-        backgroundColor: theme.colors.background,
-        color: theme.colors.foreground,
-        fontFamily: theme.typography.fontFamily,
-        ...(isGlassmorphism && {
-          backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }),
-      }}
-    >
-      <div
-        className="p-6 rounded-2xl w-full max-w-sm"
-        style={{
-          backgroundColor: isGlassmorphism ? theme.colors.background : 'transparent',
-          ...(theme.styles && {
-            boxShadow: theme.styles.boxShadow,
-            borderRadius: theme.styles.borderRadius,
-            backdropFilter: theme.styles.backdropFilter,
-            border: isGlassmorphism ? `1px solid ${theme.colors.border}` : 'none',
-          }),
-          ...(isNeumorphism && {
-            backgroundColor: theme.colors.background,
-          }),
-        }}
-      >
-        <div className="text-center mb-4">
-          <h2
-            className="text-2xl font-light"
-            style={{ color: theme.colors.primary }}
-          >
-            {monthNames[month]} {year}
+    <WidgetContainer theme={theme} minHeight={280}>
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        margin: '0 auto',
+        padding: '24px',
+      }}>
+        {/* Header */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '24px',
+        }}>
+          <h2 className="text-2xl" style={{
+            color: theme.colors.primary,
+            fontWeight: '600',
+            letterSpacing: '-0.02em',
+            marginBottom: '4px',
+          }}>
+            {monthNames[month]}
           </h2>
+          <p className="text-base" style={{
+            color: theme.colors.secondary,
+            opacity: 0.7,
+          }}>
+            {year}
+          </p>
         </div>
         
-        <div className="grid grid-cols-7 gap-1 text-center">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+        {/* Calendar Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: '4px',
+          textAlign: 'center',
+        }}>
+          {/* Day headers */}
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
             <div
               key={i}
-              className="text-xs font-medium py-2"
-              style={{ color: theme.colors.secondary }}
+              className="text-xs"
+              style={{
+                padding: '8px 0',
+                fontWeight: '600',
+                color: theme.colors.secondary,
+                opacity: 0.6,
+                letterSpacing: '0.05em',
+              }}
             >
               {day}
             </div>
           ))}
           
+          {/* Calendar days */}
           {weeks.map((week, weekIndex) => (
             <React.Fragment key={weekIndex}>
-              {week.map((day, dayIndex) => (
-                <div
-                  key={`${weekIndex}-${dayIndex}`}
-                  className={`py-2 text-sm rounded-lg ${
-                    day === today ? 'font-bold' : ''
-                  }`}
-                  style={{
-                    color: day === today ? theme.colors.background : theme.colors.foreground,
-                    backgroundColor: day === today 
-                      ? theme.colors.primary 
-                      : day && (isNeumorphism || isGlassmorphism) 
-                        ? theme.colors.muted 
+              {week.map((day, dayIndex) => {
+                const isToday = day === today;
+                const isWeekend = dayIndex === 0 || dayIndex === 6;
+                
+                return (
+                  <div
+                    key={`${weekIndex}-${dayIndex}`}
+                    className="text-sm"
+                    style={{
+                      aspectRatio: '1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '12px',
+                      fontWeight: isToday ? '700' : '400',
+                      color: isToday 
+                        ? theme.colors.background 
+                        : isWeekend && day 
+                          ? theme.colors.accent
+                          : day 
+                            ? theme.colors.foreground 
+                            : 'transparent',
+                      backgroundColor: isToday 
+                        ? theme.colors.primary 
                         : 'transparent',
-                    ...(day && isNeumorphism && day !== today && theme.styles && {
-                      boxShadow: '3px 3px 6px #bebebe, -3px -3px 6px #ffffff',
-                    }),
-                    ...(day === today && isNeumorphism && theme.styles && {
-                      boxShadow: 'inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.1)',
-                    }),
-                  }}
-                >
-                  {day || ''}
-                </div>
-              ))}
+                      border: isToday 
+                        ? 'none' 
+                        : day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()
+                          ? `2px solid ${theme.colors.primary}20`
+                          : 'none',
+                      transition: 'all 0.2s ease',
+                      cursor: day ? 'pointer' : 'default',
+                      position: 'relative',
+                    }}
+                    onMouseOver={(e) => {
+                      if (day && !isToday) {
+                        e.currentTarget.style.backgroundColor = `${theme.colors.primary}10`;
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (day && !isToday) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }
+                    }}
+                  >
+                    {day || ''}
+                    {isToday && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '2px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '4px',
+                        height: '4px',
+                        borderRadius: '50%',
+                        backgroundColor: theme.colors.background,
+                      }} />
+                    )}
+                  </div>
+                );
+              })}
             </React.Fragment>
           ))}
         </div>
+
+        {/* Today indicator */}
+        <div className="text-xs" style={{
+          marginTop: '16px',
+          textAlign: 'center',
+          color: theme.colors.muted,
+          opacity: 0.6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+        }}>
+          <div style={{
+            width: '12px',
+            height: '12px',
+            borderRadius: '4px',
+            backgroundColor: theme.colors.primary,
+          }} />
+          Today
+        </div>
       </div>
-    </div>
+    </WidgetContainer>
   );
 }

@@ -2,43 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
+import { WidgetContainer } from './WidgetContainer';
 
 interface YearProgressProps {
   theme: Theme;
 }
 
 export function YearProgress({ theme }: YearProgressProps) {
-  const [progress, setProgress] = useState({
-    year: 0,
-    month: 0,
-    day: 0,
-  });
+  const [progress, setProgress] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const calculateProgress = () => {
       const now = new Date();
-      const year = now.getFullYear();
-      const startOfYear = new Date(year, 0, 1);
-      const endOfYear = new Date(year + 1, 0, 1);
-      const startOfMonth = new Date(year, now.getMonth(), 1);
-      const endOfMonth = new Date(year, now.getMonth() + 1, 1);
-      const startOfDay = new Date(year, now.getMonth(), now.getDate());
-      const endOfDay = new Date(year, now.getMonth(), now.getDate() + 1);
-
-      const yearProgress = ((now.getTime() - startOfYear.getTime()) / 
-        (endOfYear.getTime() - startOfYear.getTime())) * 100;
-      
-      const monthProgress = ((now.getTime() - startOfMonth.getTime()) / 
-        (endOfMonth.getTime() - startOfMonth.getTime())) * 100;
-      
-      const dayProgress = ((now.getTime() - startOfDay.getTime()) / 
-        (endOfDay.getTime() - startOfDay.getTime())) * 100;
-
-      setProgress({
-        year: Math.floor(yearProgress),
-        month: Math.floor(monthProgress),
-        day: Math.floor(dayProgress),
-      });
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+      const yearProgress = ((now.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
+      setProgress(yearProgress);
     };
 
     calculateProgress();
@@ -47,92 +28,144 @@ export function YearProgress({ theme }: YearProgressProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const isNeumorphism = theme.id.includes('neumorphism');
-  const isGlassmorphism = theme.id.includes('glassmorphism');
+  if (!mounted) {
+    return (
+      <WidgetContainer theme={theme} minHeight={280}>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading...</div>
+      </WidgetContainer>
+    );
+  }
 
-  const ProgressBar = ({ label, value, emoji }: { label: string; value: number; emoji: string }) => (
-    <div className="mb-4">
-      <div
-        className="flex justify-between mb-2 text-sm"
-        style={{ color: theme.colors.secondary }}
-      >
-        <span className="flex items-center gap-2">
-          <span className="text-lg">{emoji}</span>
-          {label}
-        </span>
-        <span className="font-medium">{value}%</span>
-      </div>
-      <div
-        className="w-full h-3 rounded-full overflow-hidden"
-        style={{ 
-          backgroundColor: theme.colors.muted,
-          ...(isNeumorphism && theme.styles && {
-            boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.1)',
-          }),
-        }}
-      >
-        <div
-          className="h-full rounded-full transition-all duration-500 relative overflow-hidden"
-          style={{
-            width: `${value}%`,
-            backgroundColor: theme.colors.primary,
-            ...(isGlassmorphism && {
-              background: `linear-gradient(90deg, ${theme.colors.primary} 0%, ${theme.colors.accent} 100%)`,
-            }),
-          }}
-        >
-          {(isNeumorphism || isGlassmorphism) && (
-            <div 
-              className="absolute inset-0 opacity-50"
-              style={{
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
-              }}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  const currentYear = new Date().getFullYear();
+  const daysElapsed = Math.floor((new Date().getTime() - new Date(currentYear, 0, 1).getTime()) / (1000 * 60 * 60 * 24));
+  const daysInYear = ((currentYear % 4 === 0 && currentYear % 100 !== 0) || currentYear % 400 === 0) ? 366 : 365;
+  const daysRemaining = daysInYear - daysElapsed;
 
   return (
-    <div
-      className="flex items-center justify-center h-full p-6"
-      style={{
-        backgroundColor: theme.colors.background,
-        color: theme.colors.foreground,
-        fontFamily: theme.typography.fontFamily,
-        ...(isGlassmorphism && {
-          backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        }),
-      }}
-    >
-      <div
-        className="p-6 rounded-2xl w-full max-w-sm"
-        style={{
-          backgroundColor: isGlassmorphism ? theme.colors.background : 'transparent',
-          ...(theme.styles && {
-            boxShadow: theme.styles.boxShadow,
-            borderRadius: theme.styles.borderRadius,
-            backdropFilter: theme.styles.backdropFilter,
-            border: isGlassmorphism ? `1px solid ${theme.colors.border}` : 'none',
-          }),
-          ...(isNeumorphism && {
-            backgroundColor: theme.colors.background,
-          }),
-        }}
-      >
-        <h3
-          className="text-lg font-light mb-6 text-center flex items-center justify-center gap-2"
-          style={{ color: theme.colors.primary }}
-        >
-          <span className="text-2xl">⏰</span>
-          Time Progress
-        </h3>
+    <WidgetContainer theme={theme} minHeight={280}>
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        margin: '0 auto',
+        padding: '24px',
+        textAlign: 'center',
+      }}>
+        {/* Year title */}
+        <h2 className="text-3xl" style={{
+          color: theme.colors.primary,
+          fontWeight: '700',
+          marginBottom: '8px',
+          letterSpacing: '-0.02em',
+        }}>
+          {currentYear}
+        </h2>
         
-        <ProgressBar label="Year" value={progress.year} emoji="📅" />
-        <ProgressBar label="Month" value={progress.month} emoji="📆" />
-        <ProgressBar label="Day" value={progress.day} emoji="🌅" />
+        <p className="text-sm" style={{
+          color: theme.colors.secondary,
+          opacity: 0.7,
+          marginBottom: '32px',
+        }}>
+          Year Progress
+        </p>
+
+        {/* Progress percentage */}
+        <div className="text-5xl" style={{
+          color: theme.colors.primary,
+          fontWeight: '300',
+          marginBottom: '24px',
+          fontFamily: '"SF Mono", Monaco, "Cascadia Code", monospace',
+        }}>
+          {progress.toFixed(1)}%
+        </div>
+
+        {/* Progress bar */}
+        <div style={{
+          width: '100%',
+          height: '24px',
+          backgroundColor: `${theme.colors.muted}40`,
+          borderRadius: '12px',
+          overflow: 'hidden',
+          position: 'relative',
+          marginBottom: '24px',
+        }}>
+          <div style={{
+            width: `${progress}%`,
+            height: '100%',
+            background: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+            borderRadius: '12px',
+            transition: 'width 0.5s ease',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            {/* Animated shimmer effect */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+              animation: 'shimmer 2s infinite',
+            }} />
+          </div>
+        </div>
+
+        {/* Days info */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-around',
+          gap: '16px',
+        }}>
+          <div>
+            <div className="text-2xl" style={{
+              color: theme.colors.primary,
+              fontWeight: '600',
+              marginBottom: '4px',
+            }}>
+              {daysElapsed}
+            </div>
+            <div className="text-xs" style={{
+              color: theme.colors.secondary,
+              opacity: 0.7,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Days Passed
+            </div>
+          </div>
+
+          <div style={{
+            width: '1px',
+            backgroundColor: theme.colors.border,
+            opacity: 0.2,
+          }} />
+
+          <div>
+            <div className="text-2xl" style={{
+              color: theme.colors.accent,
+              fontWeight: '600',
+              marginBottom: '4px',
+            }}>
+              {daysRemaining}
+            </div>
+            <div className="text-xs" style={{
+              color: theme.colors.secondary,
+              opacity: 0.7,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Days Left
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+          }
+        `}</style>
       </div>
-    </div>
+    </WidgetContainer>
   );
 }

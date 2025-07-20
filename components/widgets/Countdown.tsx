@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Theme } from '@/types/theme';
+import { WidgetContainer } from './WidgetContainer';
 
 interface CountdownProps {
   theme: Theme;
@@ -14,9 +15,12 @@ export function Countdown({ theme }: CountdownProps) {
     minutes: 0,
     seconds: 0,
   });
+  const [mounted, setMounted] = useState(false);
+  const [targetTitle] = useState('New Year 2025');
+  const targetDate = useMemo(() => new Date('2025-01-01T00:00:00'), []);
 
   useEffect(() => {
-    const targetDate = new Date('2025-01-01T00:00:00');
+    setMounted(true);
     const timer = setInterval(() => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
@@ -28,84 +32,200 @@ export function Countdown({ theme }: CountdownProps) {
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [targetDate]);
 
-  const isNeumorphism = theme.id.includes('neumorphism');
-  const isGlassmorphism = theme.id.includes('glassmorphism');
+  if (!mounted) {
+    return (
+      <WidgetContainer theme={theme} minHeight={280}>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading countdown...</div>
+      </WidgetContainer>
+    );
+  }
 
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-    <div
-      className="text-center p-4 rounded-xl"
-      style={{
-        backgroundColor: isGlassmorphism 
-          ? 'rgba(255, 255, 255, 0.1)' 
-          : isNeumorphism 
-            ? theme.colors.background
-            : theme.colors.muted,
-        ...(isNeumorphism && theme.styles && {
-          boxShadow: '5px 5px 10px rgba(0,0,0,0.1), -5px -5px 10px rgba(255,255,255,0.1)',
-        }),
-      }}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '16px',
+      borderRadius: '12px',
+      backgroundColor: `${theme.colors.muted}20`,
+      border: `1px solid ${theme.colors.border}30`,
+      minWidth: '60px',
+      transition: 'all 0.3s ease',
+      position: 'relative',
+      overflow: 'hidden',
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)';
+      e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.1)';
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)';
+      e.currentTarget.style.boxShadow = 'none';
+    }}
     >
+      {/* Animated background gradient */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: `linear-gradient(135deg, ${theme.colors.primary}10 0%, transparent 100%)`,
+        opacity: 0.5,
+        pointerEvents: 'none',
+      }} />
+      
       <div
-        className="text-3xl font-bold tabular-nums"
-        style={{ color: theme.colors.primary }}
+        className="text-3xl"
+        style={{
+          color: theme.colors.primary,
+          fontWeight: '700',
+          fontFamily: '"SF Mono", Monaco, "Cascadia Code", monospace',
+          position: 'relative',
+          letterSpacing: '-0.02em',
+        }}
       >
         {value.toString().padStart(2, '0')}
       </div>
       <div
-        className="text-xs uppercase tracking-wider mt-1"
-        style={{ color: theme.colors.secondary }}
+        className="text-xs"
+        style={{
+          color: theme.colors.secondary,
+          opacity: 0.7,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          marginTop: '4px',
+          fontWeight: '500',
+        }}
       >
         {label}
       </div>
     </div>
   );
 
+  const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+
   return (
-    <div
-      className="flex items-center justify-center h-full p-6"
-      style={{
-        backgroundColor: theme.colors.background,
-        color: theme.colors.foreground,
-        fontFamily: theme.typography.fontFamily,
-        ...(isGlassmorphism && {
-          backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }),
-      }}
-    >
-      <div
-        className="p-6 rounded-2xl"
-        style={{
-          backgroundColor: isGlassmorphism ? theme.colors.background : 'transparent',
-          ...(theme.styles && {
-            boxShadow: theme.styles.boxShadow,
-            borderRadius: theme.styles.borderRadius,
-            backdropFilter: theme.styles.backdropFilter,
-            border: isGlassmorphism ? `1px solid ${theme.colors.border}` : 'none',
-          }),
-          ...(isNeumorphism && {
-            backgroundColor: theme.colors.background,
-          }),
-        }}
-      >
+    <WidgetContainer theme={theme} minHeight={280}>
+      <div style={{
+        width: '100%',
+        maxWidth: '500px',
+        margin: '0 auto',
+        padding: '24px',
+        textAlign: 'center',
+      }}>
+        {/* Target title */}
         <h3
-          className="text-center text-sm font-medium mb-4"
-          style={{ color: theme.colors.secondary }}
+          className="text-base"
+          style={{
+            color: theme.colors.secondary,
+            fontWeight: '500',
+            marginBottom: '8px',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            opacity: 0.8,
+          }}
         >
-          New Year 2025
+          Countdown to
         </h3>
-        <div className="grid grid-cols-4 gap-3">
-          <TimeUnit value={timeLeft.days} label="Days" />
-          <TimeUnit value={timeLeft.hours} label="Hours" />
-          <TimeUnit value={timeLeft.minutes} label="Mins" />
-          <TimeUnit value={timeLeft.seconds} label="Secs" />
+        <h2
+          className="text-2xl"
+          style={{
+            color: theme.colors.primary,
+            fontWeight: '700',
+            marginBottom: '32px',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {targetTitle}
+        </h2>
+
+        {/* Countdown display */}
+        {isExpired ? (
+          <div style={{
+            padding: '40px',
+            borderRadius: '16px',
+            backgroundColor: `${theme.colors.accent}10`,
+            border: `2px solid ${theme.colors.accent}30`,
+          }}>
+            <div className="text-3xl" style={{
+              color: theme.colors.accent,
+              fontWeight: '700',
+              marginBottom: '8px',
+            }}>
+              🎉 Time&apos;s Up! 🎉
+            </div>
+            <div className="text-base" style={{
+              color: theme.colors.secondary,
+              opacity: 0.8,
+            }}>
+              The countdown has ended
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '12px',
+              marginBottom: '24px',
+            }}>
+              <TimeUnit value={timeLeft.days} label="Days" />
+              <TimeUnit value={timeLeft.hours} label="Hours" />
+              <TimeUnit value={timeLeft.minutes} label="Mins" />
+              <TimeUnit value={timeLeft.seconds} label="Secs" />
+            </div>
+
+            {/* Progress bar */}
+            <div style={{
+              width: '100%',
+              height: '4px',
+              backgroundColor: `${theme.colors.border}40`,
+              borderRadius: '2px',
+              overflow: 'hidden',
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                height: '100%',
+                width: '50%',
+                background: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                animation: 'shimmer 3s ease-in-out infinite',
+              }} />
+            </div>
+          </>
+        )}
+
+        {/* Date info */}
+        <div className="text-xs" style={{
+          marginTop: '16px',
+          color: theme.colors.muted,
+          opacity: 0.6,
+        }}>
+          Target: {targetDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
         </div>
+
+        <style>{`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+          }
+        `}</style>
       </div>
-    </div>
+    </WidgetContainer>
   );
 }
