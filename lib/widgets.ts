@@ -3,6 +3,8 @@ import { Clock } from '@/components/widgets/Clock';
 import { Calendar } from '@/components/widgets/Calendar';
 import { Weather } from '@/components/widgets/Weather';
 import { YearProgress } from '@/components/widgets/YearProgress';
+import { Quote } from '@/components/widgets/Quote';
+import { Countdown } from '@/components/widgets/Countdown';
 
 export const widgets: Widget[] = [
   {
@@ -48,5 +50,27 @@ export const widgets: Widget[] = [
       height: 300,
     },
     component: YearProgress,
+  },
+  {
+    id: 'quote',
+    name: 'Daily Quote',
+    description: 'Inspirational quotes that change periodically',
+    category: 'Motivation',
+    defaultSize: {
+      width: 400,
+      height: 250,
+    },
+    component: Quote,
+  },
+  {
+    id: 'countdown',
+    name: 'Countdown Timer',
+    description: 'Countdown to New Year 2025',
+    category: 'Time',
+    defaultSize: {
+      width: 400,
+      height: 200,
+    },
+    component: Countdown,
   },
 ];

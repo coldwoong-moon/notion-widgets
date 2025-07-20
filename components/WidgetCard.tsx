@@ -11,6 +11,7 @@ interface WidgetCardProps {
 
 export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
   const [copied, setCopied] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}`;
   
@@ -26,74 +27,71 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
 
   const WidgetComponent = widget.component;
 
+  // Use widget's aspect ratio for natural sizing
+  const aspectRatio = widget.defaultSize.width / widget.defaultSize.height;
+  const heightClass = aspectRatio > 1.5 ? 'h-56' : aspectRatio > 1 ? 'h-64' : 'h-72';
+
   return (
     <div
-      className="group relative rounded-lg border overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
+      className={`group relative ${heightClass} rounded-2xl overflow-hidden cursor-pointer transition-all duration-300`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={handleCopy}
       style={{ 
-        backgroundColor: theme.colors.background,
-        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.muted,
+        boxShadow: isHovered 
+          ? '0 20px 40px rgba(0,0,0,0.15)' 
+          : '0 4px 12px rgba(0,0,0,0.05)',
+        transform: isHovered ? 'scale(1.02)' : 'scale(1)',
       }}
     >
-      {/* Widget Preview */}
-      <div
-        className="relative h-48 overflow-hidden"
-        style={{ 
-          backgroundColor: theme.colors.muted,
-        }}
+      {/* Widget Preview - Full Size */}
+      <div className="absolute inset-0">
+        <WidgetComponent theme={theme} />
+      </div>
+      
+      {/* Gradient Overlay */}
+      <div 
+        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      />
+      
+      {/* Info Overlay - Only on Hover */}
+      <div 
+        className={`absolute bottom-0 left-0 right-0 p-4 transform transition-all duration-300 ${
+          isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
       >
-        <div className="absolute inset-0 scale-75">
-          <WidgetComponent theme={theme} />
+        <div className="text-white">
+          <h3 className="font-semibold text-lg mb-1">{widget.name}</h3>
+          <p className="text-sm opacity-90 mb-3">{widget.description}</p>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-xs opacity-75">
+              {widget.defaultSize.width} × {widget.defaultSize.height}
+            </span>
+            <div
+              className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+              style={{
+                backgroundColor: copied ? 'rgba(34, 197, 94, 1)' : 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              {copied ? '✓ Copied!' : 'Click to copy'}
+            </div>
+          </div>
         </div>
       </div>
       
-      {/* Widget Info */}
-      <div className="p-4 space-y-3">
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <h3
-              className="font-medium text-sm"
-              style={{ color: theme.colors.primary }}
-            >
-              {widget.name}
-            </h3>
-            <span
-              className="text-xs px-2 py-0.5 rounded-full"
-              style={{
-                backgroundColor: theme.colors.muted,
-                color: theme.colors.secondary,
-              }}
-            >
-              {widget.category}
-            </span>
-          </div>
-          <p
-            className="text-xs"
-            style={{ color: theme.colors.secondary }}
-          >
-            {widget.description}
-          </p>
-        </div>
-        
-        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: theme.colors.border }}>
-          <span
-            className="text-xs font-mono"
-            style={{ color: theme.colors.secondary }}
-          >
-            {widget.defaultSize.width}×{widget.defaultSize.height}
-          </span>
-          
-          <button
-            className="text-xs font-medium px-3 py-1 rounded-md transition-colors"
-            style={{
-              backgroundColor: copied ? theme.colors.primary : 'transparent',
-              color: copied ? theme.colors.background : theme.colors.primary,
-              border: `1px solid ${theme.colors.primary}`,
-            }}
-          >
-            {copied ? '✓ Copied' : 'Copy URL'}
-          </button>
-        </div>
+      {/* Category Badge */}
+      <div
+        className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          color: theme.colors.primary,
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        {widget.category}
       </div>
     </div>
   );
