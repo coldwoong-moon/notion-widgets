@@ -33,6 +33,7 @@ export interface Widget {
   name: string;
   description: string;
   category: string;
+  icon: string; // emoji or icon
   defaultSize: {
     width: number;
     height: number;

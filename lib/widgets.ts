@@ -12,6 +12,7 @@ export const widgets: Widget[] = [
     name: 'Clock',
     description: 'A minimalist digital clock widget',
     category: 'Time',
+    icon: '🕐',
     defaultSize: {
       width: 300,
       height: 200,
@@ -23,6 +24,7 @@ export const widgets: Widget[] = [
     name: 'Calendar',
     description: 'A clean monthly calendar view',
     category: 'Time',
+    icon: '📅',
     defaultSize: {
       width: 350,
       height: 400,
@@ -34,6 +36,7 @@ export const widgets: Widget[] = [
     name: 'Weather',
     description: 'Simple weather display widget',
     category: 'Information',
+    icon: '☀️',
     defaultSize: {
       width: 300,
       height: 250,
@@ -45,6 +48,7 @@ export const widgets: Widget[] = [
     name: 'Year Progress',
     description: 'Track the progress of year, month, and day',
     category: 'Time',
+    icon: '📊',
     defaultSize: {
       width: 350,
       height: 300,
@@ -56,6 +60,7 @@ export const widgets: Widget[] = [
     name: 'Daily Quote',
     description: 'Inspirational quotes that change periodically',
     category: 'Motivation',
+    icon: '💭',
     defaultSize: {
       width: 400,
       height: 250,
@@ -67,6 +72,7 @@ export const widgets: Widget[] = [
     name: 'Countdown Timer',
     description: 'Countdown to New Year 2025',
     category: 'Time',
+    icon: '⏳',
     defaultSize: {
       width: 400,
       height: 200,

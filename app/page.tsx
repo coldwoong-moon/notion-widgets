@@ -15,14 +15,6 @@ export default function Home() {
       : window.location.origin
     : '';
 
-  // Group widgets by category
-  const groupedWidgets = widgets.reduce((acc, widget) => {
-    if (!acc[widget.category]) {
-      acc[widget.category] = [];
-    }
-    acc[widget.category].push(widget);
-    return acc;
-  }, {} as Record<string, typeof widgets>);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.muted }}>
@@ -86,54 +78,49 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Category Sections */}
-        {Object.entries(groupedWidgets).map(([category, categoryWidgets]) => (
-          <div key={category} className="mb-12">
-            <div className="mb-6">
-              <h2
-                className="text-sm font-medium uppercase tracking-wider"
-                style={{ color: currentTheme.colors.secondary }}
-              >
-                {category}
-              </h2>
-              <div 
-                className="mt-2 h-px"
-                style={{ backgroundColor: currentTheme.colors.border }}
-              />
-            </div>
-            
-            {/* Widget Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {categoryWidgets.map((widget) => (
-                <WidgetCard
-                  key={widget.id}
-                  widget={widget}
-                  theme={currentTheme}
-                  baseUrl={baseUrl}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h2
+            className="text-3xl font-bold mb-4"
+            style={{ color: currentTheme.colors.primary }}
+          >
+            Widget Gallery
+          </h2>
+          <p
+            className="text-lg"
+            style={{ color: currentTheme.colors.secondary }}
+          >
+            Choose from our collection of beautiful widgets
+          </p>
+        </div>
 
-        {/* Footer */}
-        <footer className="mt-20 pt-8 border-t" style={{ borderColor: currentTheme.colors.border }}>
-          <div className="text-center">
-            <p
-              className="text-sm"
-              style={{ color: currentTheme.colors.secondary }}
-            >
-              Click any widget to copy its embed URL
-            </p>
-            <p
-              className="text-xs mt-2"
-              style={{ color: currentTheme.colors.secondary, opacity: 0.7 }}
-            >
-              Use <code className="px-1 py-0.5 rounded" style={{ backgroundColor: currentTheme.colors.muted }}>/embed</code> in Notion to add widgets
-            </p>
+        {/* All Widgets Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {widgets.map((widget) => (
+            <WidgetCard
+              key={widget.id}
+              widget={widget}
+              theme={currentTheme}
+              baseUrl={baseUrl}
+            />
+          ))}
+        </div>
+
+        {/* Instructions */}
+        <div className="mt-16 text-center">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
+            style={{ 
+              backgroundColor: currentTheme.colors.muted,
+              color: currentTheme.colors.secondary 
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Click any widget to copy its embed URL
           </div>
-        </footer>
+        </div>
       </main>
     </div>
   );

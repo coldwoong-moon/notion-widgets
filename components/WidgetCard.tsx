@@ -27,107 +27,90 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
     }
   };
 
-  const WidgetComponent = widget.component;
-
   return (
     <div
-      className="group relative rounded-2xl overflow-hidden transition-all duration-300"
+      className="group relative aspect-square rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCopy}
       style={{ 
-        backgroundColor: theme.colors.background,
+        background: `linear-gradient(135deg, ${theme.colors.muted}, ${theme.colors.background})`,
         boxShadow: isHovered 
-          ? '0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.08)'
-          : '0 2px 8px -2px rgba(0, 0, 0, 0.05)',
-        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-        border: `1px solid ${theme.colors.border}`,
+          ? '0 20px 40px -8px rgba(0, 0, 0, 0.15)'
+          : '0 4px 12px -2px rgba(0, 0, 0, 0.05)',
+        transform: isHovered ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)',
       }}
     >
-      {/* Widget Preview */}
-      <div 
-        className="relative w-full h-48 overflow-hidden"
-        style={{ 
-          backgroundColor: theme.colors.muted,
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center p-4">
-          <div className="w-full h-full scale-90">
-            <WidgetComponent theme={theme} />
-          </div>
+      {/* Main Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+        {/* Icon */}
+        <div className="text-5xl mb-4 transform transition-transform duration-300 group-hover:scale-110">
+          {widget.icon}
         </div>
         
-        {/* Quick Actions - Only on Hover */}
-        <div className={`absolute top-3 right-3 transition-opacity duration-200 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <button
-            onClick={handleCopy}
-            className="p-2 rounded-lg backdrop-blur-md transition-colors"
+        {/* Widget Name */}
+        <h3
+          className="font-semibold text-base text-center mb-2"
+          style={{ color: theme.colors.primary }}
+        >
+          {widget.name}
+        </h3>
+        
+        {/* Description - Show on hover */}
+        <p
+          className={`text-xs text-center transition-all duration-300 ${
+            isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+          }`}
+          style={{ color: theme.colors.secondary }}
+        >
+          {widget.description}
+        </p>
+      </div>
+
+      {/* Copy Status Badge */}
+      {(copied || isHovered) && (
+        <div className="absolute top-3 right-3">
+          <div
+            className={`
+              px-3 py-1.5 rounded-full text-xs font-medium
+              backdrop-blur-md transition-all duration-300
+              ${copied ? 'bg-green-500/90 text-white' : 'bg-white/90'}
+            `}
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              border: `1px solid ${theme.colors.border}`,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              color: copied ? 'white' : theme.colors.primary,
             }}
-            title="Copy embed URL"
           >
             {copied ? (
-              <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              <span className="flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+                Copied!
+              </span>
             ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: theme.colors.primary }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
+              <span className="flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy URL
+              </span>
             )}
-          </button>
-        </div>
-      </div>
-      
-      {/* Widget Info */}
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <div className="flex-1">
-            <h3
-              className="font-semibold text-base leading-tight mb-1"
-              style={{ color: theme.colors.primary }}
-            >
-              {widget.name}
-            </h3>
-            <p
-              className="text-sm leading-relaxed"
-              style={{ color: theme.colors.secondary }}
-            >
-              {widget.description}
-            </p>
           </div>
         </div>
-        
-        {/* Widget Meta */}
-        <div className="flex items-center gap-3 mt-4">
-          <div className="flex items-center gap-2">
-            <div 
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: theme.colors.accent }}
-            />
-            <span
-              className="text-xs font-medium"
-              style={{ color: theme.colors.secondary }}
-            >
-              {widget.category}
-            </span>
-          </div>
-          <span
-            className="text-xs"
-            style={{ color: theme.colors.secondary, opacity: 0.5 }}
-          >
-            •
-          </span>
-          <span
-            className="text-xs font-mono"
-            style={{ color: theme.colors.secondary, opacity: 0.7 }}
-          >
-            {widget.defaultSize.width}×{widget.defaultSize.height}
-          </span>
-        </div>
+      )}
+
+      {/* Category Badge */}
+      <div className="absolute bottom-3 left-3">
+        <span
+          className="px-2 py-1 rounded-full text-xs font-medium"
+          style={{
+            backgroundColor: theme.colors.accent + '20',
+            color: theme.colors.accent,
+          }}
+        >
+          {widget.category}
+        </span>
       </div>
     </div>
   );
