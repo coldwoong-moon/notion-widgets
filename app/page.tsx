@@ -78,24 +78,24 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-8">
           <h2
-            className="text-3xl font-bold mb-4"
+            className="text-2xl font-bold mb-2"
             style={{ color: currentTheme.colors.primary }}
           >
-            Widget Gallery
+            Notion Widget Gallery
           </h2>
           <p
-            className="text-lg"
+            className="text-sm"
             style={{ color: currentTheme.colors.secondary }}
           >
-            Choose from our collection of beautiful widgets
+            Click any widget to copy its embed URL
           </p>
         </div>
 
-        {/* All Widgets Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* All Widgets Grid - Compact Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {widgets.map((widget) => (
             <WidgetCard
               key={widget.id}
@@ -107,19 +107,19 @@ export default function Home() {
         </div>
 
         {/* Instructions */}
-        <div className="mt-16 text-center">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
-            style={{ 
-              backgroundColor: currentTheme.colors.muted,
-              color: currentTheme.colors.secondary 
-            }}
+        <div className="mt-12 text-center space-y-2">
+          <p
+            className="text-xs"
+            style={{ color: currentTheme.colors.secondary }}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Click any widget to copy its embed URL
-          </div>
+            Use <code className="px-1.5 py-0.5 rounded text-xs" style={{ backgroundColor: currentTheme.colors.muted }}>/embed</code> in Notion to add widgets
+          </p>
+          <p
+            className="text-xs"
+            style={{ color: currentTheme.colors.secondary, opacity: 0.7 }}
+          >
+            Each widget adjusts to your selected theme automatically
+          </p>
         </div>
       </main>
     </div>
