@@ -11,11 +11,11 @@ interface WidgetCardProps {
 
 export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
   const [copied, setCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   
   const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}`;
   
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
       await navigator.clipboard.writeText(widgetUrl);
       setCopied(true);
@@ -29,70 +29,74 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
 
   return (
     <div
-      className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group relative rounded-lg border overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer"
       onClick={handleCopy}
       style={{ 
-        backgroundColor: theme.colors.muted,
-        boxShadow: isHovered 
-          ? '0 20px 40px rgba(0,0,0,0.15)' 
-          : '0 4px 12px rgba(0,0,0,0.05)',
-        transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+        backgroundColor: theme.colors.background,
+        borderColor: theme.colors.border,
       }}
     >
       {/* Widget Preview */}
       <div 
-        className="relative w-full"
-        style={{ height: '250px' }}
+        className="relative w-full h-40 overflow-hidden"
+        style={{ backgroundColor: theme.colors.muted }}
       >
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 scale-75">
           <WidgetComponent theme={theme} />
         </div>
         
-        {/* Gradient Overlay */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        />
-      </div>
-      
-      {/* Info Overlay - Only on Hover */}
-      <div 
-        className={`absolute bottom-0 left-0 right-0 p-4 transform transition-all duration-300 ${
-          isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}
-      >
-        <div className="text-white">
-          <h3 className="font-semibold text-lg mb-1">{widget.name}</h3>
-          <p className="text-sm opacity-90 mb-3">{widget.description}</p>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-xs opacity-75">
-              {widget.defaultSize.width} × {widget.defaultSize.height}
-            </span>
-            <div
-              className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
-              style={{
-                backgroundColor: copied ? 'rgba(34, 197, 94, 1)' : 'rgba(255, 255, 255, 0.2)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              {copied ? '✓ Copied!' : 'Click to copy'}
-            </div>
+        {/* Hover Overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+        
+        {/* Copy Status */}
+        {copied && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+            <div className="text-white font-medium">✓ URL Copied!</div>
           </div>
-        </div>
+        )}
       </div>
       
-      {/* Category Badge */}
-      <div
-        className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium"
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          color: theme.colors.primary,
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        {widget.category}
+      {/* Widget Info */}
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3
+            className="font-medium text-sm leading-tight"
+            style={{ color: theme.colors.primary }}
+          >
+            {widget.name}
+          </h3>
+          <span
+            className="text-xs px-1.5 py-0.5 rounded shrink-0"
+            style={{
+              backgroundColor: theme.colors.muted,
+              color: theme.colors.secondary,
+            }}
+          >
+            {widget.category}
+          </span>
+        </div>
+        
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: theme.colors.secondary }}
+        >
+          {widget.description}
+        </p>
+        
+        <div className="mt-2 flex items-center justify-between">
+          <span
+            className="text-xs font-mono"
+            style={{ color: theme.colors.secondary, opacity: 0.7 }}
+          >
+            {widget.defaultSize.width}×{widget.defaultSize.height}
+          </span>
+          <span
+            className="text-xs"
+            style={{ color: theme.colors.accent }}
+          >
+            Click to copy →
+          </span>
+        </div>
       </div>
     </div>
   );

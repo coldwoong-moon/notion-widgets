@@ -17,30 +17,30 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-      {/* Minimal Header */}
+      {/* Header */}
       <header className="border-b" style={{ borderColor: currentTheme.colors.border }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
             <h1
-              className="text-lg font-medium"
+              className="text-xl font-semibold"
               style={{ color: currentTheme.colors.primary }}
             >
               Notion Widgets
             </h1>
             
-            {/* Minimal Theme Switcher */}
-            <div className="flex items-center gap-1">
+            {/* Theme Switcher */}
+            <div className="flex items-center gap-2">
               {availableThemes.map((theme) => (
                 <button
                   key={theme.id}
                   onClick={() => setTheme(theme.id)}
-                  className="w-8 h-8 rounded-full border-2 transition-all"
+                  className="w-6 h-6 rounded-full border-2 transition-all"
                   style={{
                     backgroundColor: theme.colors.background,
                     borderColor: currentTheme.id === theme.id 
                       ? currentTheme.colors.primary 
                       : theme.colors.border,
-                    transform: currentTheme.id === theme.id ? 'scale(1.2)' : 'scale(1)',
+                    transform: currentTheme.id === theme.id ? 'scale(1.1)' : 'scale(1)',
                   }}
                   title={theme.name}
                 >
@@ -52,43 +52,29 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Gallery Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Regular Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Widget Grid - Centered */}
+        <div className="flex flex-wrap justify-center gap-4">
           {widgets.map((widget) => (
-            <WidgetCard
-              key={widget.id}
-              widget={widget}
-              theme={currentTheme}
-              baseUrl={baseUrl}
-            />
+            <div key={widget.id} className="w-72">
+              <WidgetCard
+                widget={widget}
+                theme={currentTheme}
+                baseUrl={baseUrl}
+              />
+            </div>
           ))}
         </div>
 
-        {/* Floating Help */}
-        <div
-          className="fixed bottom-6 right-6 p-4 rounded-lg shadow-lg max-w-xs"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            borderColor: currentTheme.colors.border,
-            border: '1px solid',
-          }}
-        >
-          <h3
-            className="text-sm font-medium mb-2"
-            style={{ color: currentTheme.colors.primary }}
-          >
-            Quick Tips
-          </h3>
-          <ul
-            className="text-xs space-y-1"
+        {/* Usage Instructions */}
+        <div className="mt-16 text-center">
+          <p
+            className="text-sm"
             style={{ color: currentTheme.colors.secondary }}
           >
-            <li>• Click any widget to copy its URL</li>
-            <li>• Use /embed in Notion to add widgets</li>
-            <li>• Try different themes with the circles above</li>
-          </ul>
+            Click any widget to copy its embed URL • Use <code>/embed</code> in Notion
+          </p>
         </div>
       </main>
     </div>
