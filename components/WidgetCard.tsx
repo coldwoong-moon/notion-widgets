@@ -29,18 +29,18 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
   return (
     <div className="group relative">
       <div 
-        className="rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-xl"
+        className="rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg"
         style={{ 
           backgroundColor: theme.colors.background,
           border: `1px solid ${theme.colors.border}`,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
         }}
       >
-        {/* Widget Preview - Always Visible */}
+        {/* Widget Preview - Smaller Size */}
         <div 
           style={{ 
             width: '100%',
-            height: '250px',
+            height: '160px',
             backgroundColor: theme.colors.muted,
             position: 'relative',
             overflow: 'hidden'
@@ -48,52 +48,38 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
         >
           {/* Scale the widget to fit */}
           <div style={{ 
-            transform: 'scale(0.7)', 
+            transform: 'scale(0.5)', 
             transformOrigin: 'center',
-            width: '100%',
-            height: '100%',
+            width: '200%',
+            height: '200%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%'
           }}>
             <WidgetComponent theme={theme} />
           </div>
-          
-          {/* Overlay gradient for better text visibility */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '60px',
-            background: `linear-gradient(to top, ${theme.colors.background}, transparent)`,
-          }} />
         </div>
         
-        {/* Widget Info */}
-        <div className="p-4">
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{widget.icon}</span>
-              <div>
-                <h3 className="font-semibold" style={{ color: theme.colors.primary }}>
-                  {widget.name}
-                </h3>
-                <p className="text-xs" style={{ color: theme.colors.secondary, opacity: 0.7 }}>
-                  {widget.category}
-                </p>
-              </div>
-            </div>
+        {/* Widget Info - Compact */}
+        <div className="p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">{widget.icon}</span>
+            <h3 className="font-medium text-sm" style={{ color: theme.colors.primary }}>
+              {widget.name}
+            </h3>
           </div>
           
-          <p className="text-sm mb-3" style={{ color: theme.colors.secondary }}>
+          <p className="text-xs mb-3 line-clamp-2" style={{ color: theme.colors.secondary }}>
             {widget.description}
           </p>
           
-          {/* Copy Button */}
+          {/* Copy Button - Smaller */}
           <button
             onClick={handleCopy}
-            className="w-full py-2 px-4 rounded-lg text-sm font-medium transition-all"
+            className="w-full py-1.5 px-3 rounded text-xs font-medium transition-all"
             style={{
               backgroundColor: copied ? '#10b981' : theme.colors.primary,
               color: theme.colors.background,
@@ -101,7 +87,7 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
               cursor: 'pointer',
             }}
           >
-            {copied ? '✓ Copied!' : 'Copy Widget URL'}
+            {copied ? '✓ Copied!' : 'Copy URL'}
           </button>
         </div>
       </div>
