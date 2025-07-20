@@ -365,7 +365,7 @@ export default function Home() {
                     justifyContent: 'center',
                   }}>
                     <AdBanner 
-                      dataAdSlot="YOUR_AD_SLOT_ID"
+                      dataAdSlot={process.env.NEXT_PUBLIC_AD_SLOT_GALLERY || "YOUR_AD_SLOT_ID"}
                       dataAdFormat="fluid"
                       style={{ width: '100%', height: '100%' }}
                     />
@@ -437,7 +437,7 @@ export default function Home() {
             textAlign: 'center',
           }}>
             <AdBanner 
-              dataAdSlot="YOUR_HORIZONTAL_AD_SLOT_ID"
+              dataAdSlot={process.env.NEXT_PUBLIC_AD_SLOT_BANNER || "YOUR_HORIZONTAL_AD_SLOT_ID"}
               dataAdFormat="horizontal"
               style={{ minHeight: '90px' }}
             />
