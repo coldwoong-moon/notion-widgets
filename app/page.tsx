@@ -16,104 +16,135 @@ export default function Home() {
     : '';
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.muted }}>
+      {/* Header */}
       <header
-        className="border-b"
-        style={{ borderColor: currentTheme.colors.border }}
+        className="sticky top-0 z-50 border-b backdrop-blur-lg"
+        style={{ 
+          borderColor: currentTheme.colors.border,
+          backgroundColor: currentTheme.colors.background + 'dd',
+        }}
       >
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1
-                className="text-3xl font-light tracking-tight"
+                className="text-2xl font-semibold tracking-tight"
                 style={{ color: currentTheme.colors.primary }}
               >
                 Notion Widgets
               </h1>
               <p
-                className="text-sm mt-1"
+                className="text-sm mt-0.5"
                 style={{ color: currentTheme.colors.secondary }}
               >
-                Beautiful embeddable widgets for your Notion pages
+                Beautiful embeddable widgets for your Notion workspace
               </p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <span
-                className="text-sm"
-                style={{ color: currentTheme.colors.secondary }}
-              >
-                Theme:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {availableThemes.map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => setTheme(theme.id)}
-                    className={`px-4 py-2 text-xs rounded-lg transition-all ${
-                      currentTheme.id === theme.id
-                        ? 'scale-105'
-                        : 'hover:scale-105'
-                    }`}
-                    style={{
-                      backgroundColor: currentTheme.id === theme.id
-                        ? currentTheme.colors.primary
-                        : currentTheme.colors.muted,
-                      color: currentTheme.id === theme.id
-                        ? currentTheme.colors.background
-                        : currentTheme.colors.foreground,
-                      border: currentTheme.id === theme.id
-                        ? '2px solid transparent'
-                        : `2px solid ${currentTheme.colors.border}`,
-                    }}
-                  >
-                    {theme.name}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              {availableThemes.map((theme) => (
+                <button
+                  key={theme.id}
+                  onClick={() => setTheme(theme.id)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    currentTheme.id === theme.id
+                      ? ''
+                      : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: currentTheme.id === theme.id
+                      ? currentTheme.colors.primary
+                      : 'transparent',
+                    color: currentTheme.id === theme.id
+                      ? currentTheme.colors.background
+                      : currentTheme.colors.foreground,
+                    border: `1px solid ${
+                      currentTheme.id === theme.id 
+                        ? currentTheme.colors.primary 
+                        : currentTheme.colors.border
+                    }`,
+                  }}
+                >
+                  {theme.name.replace(' Light', '').replace(' Dark', '')}
+                  {theme.id.includes('Light') && ' L'}
+                  {theme.id.includes('Dark') && ' D'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h2 
-            className="text-xl font-light mb-2"
-            style={{ color: currentTheme.colors.primary }}
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
+          <div className="mb-8 text-center">
+            <h2 
+              className="text-lg font-medium mb-2"
+              style={{ color: currentTheme.colors.primary }}
+            >
+              Widget Collection
+            </h2>
+            <p 
+              className="text-sm"
+              style={{ color: currentTheme.colors.secondary }}
+            >
+              Click any widget to copy its embed URL for Notion
+            </p>
+          </div>
+          
+          {/* Widget Grid - 3 columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {widgets.map((widget) => (
+              <WidgetCard
+                key={widget.id}
+                widget={widget}
+                theme={currentTheme}
+                baseUrl={baseUrl}
+              />
+            ))}
+          </div>
+
+          {/* Instructions */}
+          <div 
+            className="mt-12 p-6 rounded-lg border text-center"
+            style={{ 
+              borderColor: currentTheme.colors.border,
+              backgroundColor: currentTheme.colors.background,
+            }}
           >
-            Widget Gallery
-          </h2>
-          <p 
-            className="text-sm"
-            style={{ color: currentTheme.colors.secondary }}
-          >
-            Click on any widget card to copy its embed URL
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 auto-rows-fr">
-          {widgets.map((widget) => (
-            <WidgetCard
-              key={widget.id}
-              widget={widget}
-              theme={currentTheme}
-              baseUrl={baseUrl}
-            />
-          ))}
+            <h3 
+              className="text-sm font-medium mb-2"
+              style={{ color: currentTheme.colors.primary }}
+            >
+              How to use
+            </h3>
+            <ol 
+              className="text-sm space-y-1"
+              style={{ color: currentTheme.colors.secondary }}
+            >
+              <li>1. Choose your preferred theme from the header</li>
+              <li>2. Click on any widget to copy its URL</li>
+              <li>3. In Notion, type <code className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800">/embed</code> and paste the URL</li>
+              <li>4. Resize the embed block to fit your layout</li>
+            </ol>
+          </div>
         </div>
       </main>
 
+      {/* Footer */}
       <footer
-        className="border-t mt-16"
+        className="mt-20 border-t"
         style={{ borderColor: currentTheme.colors.border }}
       >
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-6 py-6">
           <p
-            className="text-sm text-center"
+            className="text-xs text-center"
             style={{ color: currentTheme.colors.secondary }}
           >
-            Embed these widgets in your Notion pages by copying the URL and using the Embed block
+            Made with ❤️ for Notion users • Open source on GitHub
           </p>
         </div>
       </footer>
