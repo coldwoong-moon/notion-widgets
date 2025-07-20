@@ -31,13 +31,13 @@ const darkTheme: Theme = {
   id: 'dark',
   name: 'Dark',
   colors: {
-    background: '#000000',
-    foreground: '#ffffff',
+    background: '#191919',  // Notion's dark mode background
+    foreground: '#e6e6e5',  // Notion's dark mode text
     primary: '#66b3ff',
     secondary: '#999999',
     accent: '#99ccff',
     muted: '#666666',
-    border: '#333333',
+    border: '#373737',      // Notion's dark mode border
   },
   typography: {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -53,28 +53,32 @@ const darkTheme: Theme = {
 
 export function useSystemTheme() {
   const [theme, setTheme] = useState<Theme>(lightTheme);
+  const [isEmbedded, setIsEmbedded] = useState(false);
 
   useEffect(() => {
     // Check if we're in an iframe (embedded in Notion)
-    const isEmbedded = window !== window.parent;
+    const embedded = window !== window.parent;
+    setIsEmbedded(embedded);
     
     const updateTheme = () => {
       // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       
-      // If embedded, try to detect Notion's theme from background color
-      if (isEmbedded) {
-        // Notion dark mode typically has a dark background
-        const backgroundColor = window.getComputedStyle(document.body).backgroundColor;
-        const rgb = backgroundColor.match(/\d+/g);
-        if (rgb) {
-          const brightness = (parseInt(rgb[0]) + parseInt(rgb[1]) + parseInt(rgb[2])) / 3;
-          setTheme(brightness < 128 ? darkTheme : lightTheme);
-        } else {
-          setTheme(prefersDark ? darkTheme : lightTheme);
-        }
+      // Create theme with transparent background when embedded
+      const baseTheme = prefersDark ? darkTheme : lightTheme;
+      
+      if (embedded) {
+        // For embedded widgets, use transparent background
+        const transparentTheme = {
+          ...baseTheme,
+          colors: {
+            ...baseTheme.colors,
+            background: 'transparent',
+          }
+        };
+        setTheme(transparentTheme);
       } else {
-        setTheme(prefersDark ? darkTheme : lightTheme);
+        setTheme(baseTheme);
       }
     };
 
@@ -82,17 +86,26 @@ export function useSystemTheme() {
 
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', updateTheme);
+    const handleChange = () => updateTheme();
+    
+    mediaQuery.addEventListener('change', handleChange);
 
-    // Also check periodically for Notion theme changes when embedded
-    let interval: NodeJS.Timeout;
-    if (isEmbedded) {
-      interval = setInterval(updateTheme, 1000);
-    }
+    // Listen for visibility changes to detect Notion theme changes
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateTheme();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Listen for focus to detect potential theme changes
+    window.addEventListener('focus', updateTheme);
 
     return () => {
-      mediaQuery.removeEventListener('change', updateTheme);
-      if (interval) clearInterval(interval);
+      mediaQuery.removeEventListener('change', handleChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', updateTheme);
     };
   }, []);
 

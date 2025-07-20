@@ -27,11 +27,15 @@ export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
 
   return (
     <div 
-      className="w-full overflow-hidden"
       style={{ 
-        height: `${widget.defaultSize.height}px`,
-        minHeight: `${widget.defaultSize.height}px`,
-        maxHeight: `${widget.defaultSize.height}px`,
+        width: '100%',
+        height: '100%',
+        minHeight: '280px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        backgroundColor: systemTheme.colors.background,
+        transition: 'background-color 0.3s ease',
       }}
     >
       <WidgetComponent theme={systemTheme} locale={locale} />
