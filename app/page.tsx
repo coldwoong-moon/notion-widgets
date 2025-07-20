@@ -2,19 +2,12 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '@/components/providers/ThemeProvider';
-import { WidgetCard } from '@/components/WidgetCard';
+import { SimpleWidgetCard } from '@/components/SimpleWidgetCard';
 import { widgets } from '@/lib/widgets';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Palette, ArrowRight, Code2, Copy } from 'lucide-react';
-import { WidgetCustomizationDialog } from '@/components/WidgetCustomizationDialog';
-import { Widget } from '@/types/theme';
 
 export default function Home() {
   const { currentTheme, availableThemes, setTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
-  const [customizationOpen, setCustomizationOpen] = useState(false);
   
   // Get unique categories
   const categories = ['all', ...new Set(widgets.map(w => w.category))];
@@ -31,175 +24,353 @@ export default function Home() {
       : window.location.origin
     : '';
 
-  const handleCustomize = (widget: Widget) => {
-    setSelectedWidget(widget);
-    setCustomizationOpen(true);
-  };
-
   return (
-    <div className="min-h-screen bg-background">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Palette className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight">
-                  Notion Widget Gallery
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  Beautiful widgets for your workspace
-                </p>
-              </div>
+      <header style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid #e5e7eb'
+      }}>
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '0 24px'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '64px'
+          }}>
+            <div>
+              <h1 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#111827',
+                margin: 0
+              }}>
+                🎨 Notion Widget Gallery
+              </h1>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: 0
+              }}>
+                Beautiful widgets for your Notion workspace
+              </p>
             </div>
             
             {/* Theme Switcher */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground mr-2">Theme:</span>
-              <div className="flex gap-1">
-                {availableThemes.map((theme) => (
-                  <Button
-                    key={theme.id}
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "h-8 w-8 rounded-full transition-all",
-                      currentTheme.id === theme.id && "ring-2 ring-offset-2 ring-primary"
-                    )}
-                    onClick={() => setTheme(theme.id)}
-                    title={theme.name}
-                  >
-                    <div 
-                      className="h-5 w-5 rounded-full"
-                      style={{ backgroundColor: theme.colors.primary }}
-                    />
-                  </Button>
-                ))}
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '12px', color: '#6b7280', marginRight: '8px' }}>Theme:</span>
+              {availableThemes.map((theme) => (
+                <button
+                  key={theme.id}
+                  onClick={() => setTheme(theme.id)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: theme.colors.primary,
+                    border: currentTheme.id === theme.id ? '3px solid #111827' : '2px solid transparent',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease'
+                  }}
+                  title={theme.name}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                />
+              ))}
             </div>
           </div>
         </div>
       </header>
 
       {/* Category Filter */}
-      <div className="sticky top-16 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+      <div style={{
+        position: 'sticky',
+        top: '64px',
+        zIndex: 40,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid #e5e7eb'
+      }}>
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '16px 24px'
+        }}>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
+          }}>
             {categories.map((category) => (
-              <Button
+              <button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
                 onClick={() => setSelectedCategory(category)}
-                className="whitespace-nowrap"
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '999px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  backgroundColor: selectedCategory === category ? '#111827' : '#f3f4f6',
+                  color: selectedCategory === category ? '#ffffff' : '#4b5563',
+                  border: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease'
+                }}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
-                <span className="ml-2 text-xs opacity-70">
-                  {category === 'all' ? widgets.length : widgets.filter(w => w.category === category).length}
+                <span style={{
+                  marginLeft: '8px',
+                  fontSize: '12px',
+                  opacity: 0.7
+                }}>
+                  ({category === 'all' ? widgets.length : widgets.filter(w => w.category === category).length})
                 </span>
-              </Button>
+              </button>
             ))}
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Widget Gallery Grid - 카드가 더 크게 보이도록 조정 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <main style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '32px 24px'
+      }}>
+        {/* Widget Gallery Grid - 확실한 그리드 레이아웃 */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: '24px',
+          width: '100%'
+        }}>
           {filteredWidgets.map((widget) => (
-            <WidgetCard
+            <SimpleWidgetCard
               key={widget.id}
               widget={widget}
               theme={currentTheme}
               baseUrl={baseUrl}
-              onCustomize={handleCustomize}
             />
           ))}
         </div>
 
         {/* Empty State */}
         {filteredWidgets.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground">No widgets found in this category.</p>
+          <div style={{
+            textAlign: 'center',
+            padding: '80px 0',
+            color: '#6b7280'
+          }}>
+            <p>No widgets found in this category.</p>
           </div>
         )}
 
         {/* How to Use Section */}
-        <div className="mt-20 py-16 border-t">
-          <h2 className="text-2xl font-bold text-center mb-12">
+        <div style={{
+          marginTop: '80px',
+          paddingTop: '48px',
+          borderTop: '1px solid #e5e7eb'
+        }}>
+          <h2 style={{
+            fontSize: '28px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '48px',
+            color: '#111827'
+          }}>
             How to Use
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="relative group">
-              <div className="flex flex-col items-center text-center p-6 rounded-xl border bg-card transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                <div className="w-12 h-12 mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Palette className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Choose a Widget</h3>
-                <p className="text-sm text-muted-foreground">
-                  Browse our gallery and select a widget that fits your needs
-                </p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '32px',
+            maxWidth: '800px',
+            margin: '0 auto'
+          }}>
+            <div style={{
+              textAlign: 'center',
+              padding: '24px',
+              borderRadius: '12px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                margin: '0 auto 16px',
+                borderRadius: '50%',
+                backgroundColor: '#ddd6fe',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px'
+              }}>
+                🎨
               </div>
-              <ArrowRight className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                marginBottom: '8px',
+                color: '#111827'
+              }}>
+                Choose a Widget
+              </h3>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                lineHeight: '1.5'
+              }}>
+                Browse our gallery and select a widget that fits your needs
+              </p>
             </div>
             
-            <div className="relative group">
-              <div className="flex flex-col items-center text-center p-6 rounded-xl border bg-card transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                <div className="w-12 h-12 mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Copy className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Copy Widget URL</h3>
-                <p className="text-sm text-muted-foreground">
-                  Click the &quot;Copy URL&quot; button on any widget card
-                </p>
+            <div style={{
+              textAlign: 'center',
+              padding: '24px',
+              borderRadius: '12px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                margin: '0 auto 16px',
+                borderRadius: '50%',
+                backgroundColor: '#fde68a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px'
+              }}>
+                📋
               </div>
-              <ArrowRight className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                marginBottom: '8px',
+                color: '#111827'
+              }}>
+                Copy Widget URL
+              </h3>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                lineHeight: '1.5'
+              }}>
+                Click the &quot;Copy URL&quot; button on any widget card
+              </p>
             </div>
             
-            <div className="group">
-              <div className="flex flex-col items-center text-center p-6 rounded-xl border bg-card transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                <div className="w-12 h-12 mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Code2 className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Embed in Notion</h3>
-                <p className="text-sm text-muted-foreground">
-                  Type /embed in Notion and paste the URL
-                </p>
+            <div style={{
+              textAlign: 'center',
+              padding: '24px',
+              borderRadius: '12px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                margin: '0 auto 16px',
+                borderRadius: '50%',
+                backgroundColor: '#a7f3d0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px'
+              }}>
+                📝
               </div>
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                marginBottom: '8px',
+                color: '#111827'
+              }}>
+                Embed in Notion
+              </h3>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                lineHeight: '1.5'
+              }}>
+                Type /embed in Notion and paste the URL
+              </p>
             </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="mt-20 py-8 border-t bg-muted/50">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground mb-2">
+      <footer style={{
+        marginTop: '80px',
+        padding: '32px 0',
+        borderTop: '1px solid #e5e7eb',
+        backgroundColor: '#f9fafb'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            marginBottom: '8px'
+          }}>
             Made with ❤️ for Notion users
           </p>
           <a 
             href="https://github.com/coldwoong-moon/notion-widgets"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              textDecoration: 'none'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+            onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
           >
             View on GitHub
           </a>
         </div>
       </footer>
-
-      {/* Widget Customization Dialog */}
-      <WidgetCustomizationDialog
-        widget={selectedWidget}
-        theme={currentTheme}
-        baseUrl={baseUrl}
-        open={customizationOpen}
-        onOpenChange={setCustomizationOpen}
-      />
     </div>
   );
 }
