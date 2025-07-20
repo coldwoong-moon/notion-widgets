@@ -6,6 +6,7 @@ import { widgets } from '@/lib/widgets';
 import { useSystemTheme } from '@/hooks/useSystemTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Locale, locales, localeNames } from '@/lib/i18n';
+import { AdBanner } from '@/components/GoogleAdsense';
 
 export default function Home() {
   const systemTheme = useSystemTheme();
@@ -330,20 +331,48 @@ export default function Home() {
           width: '100%',
         }}>
           {filteredWidgets.map((widget, index) => (
-            <div
-              key={widget.id}
-              style={{
-                opacity: 0,
-                animation: `fadeIn 0.5s ease-out ${index * 0.05}s forwards`,
-              }}
-            >
-              <EnhancedWidgetCard
-                widget={widget}
-                theme={systemTheme}
-                baseUrl={baseUrl}
-                locale={locale}
-              />
-            </div>
+            <React.Fragment key={widget.id}>
+              <div
+                style={{
+                  opacity: 0,
+                  animation: `fadeIn 0.5s ease-out ${index * 0.05}s forwards`,
+                }}
+              >
+                <EnhancedWidgetCard
+                  widget={widget}
+                  theme={systemTheme}
+                  baseUrl={baseUrl}
+                  locale={locale}
+                />
+              </div>
+              {/* Display ad after every 3rd widget on desktop, every 2nd on mobile */}
+              {process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID && 
+               ((isMobile && index === 1) || (!isMobile && index === 2)) && (
+                <div style={{
+                  gridColumn: isMobile ? '1' : 'span 1',
+                  opacity: 0,
+                  animation: `fadeIn 0.5s ease-out ${(index + 1) * 0.05}s forwards`,
+                }}>
+                  <div style={{
+                    backgroundColor: systemTheme.colors.background,
+                    border: `1px solid ${systemTheme.colors.border}`,
+                    borderRadius: '16px',
+                    padding: '20px',
+                    height: '100%',
+                    minHeight: '250px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <AdBanner 
+                      dataAdSlot="YOUR_AD_SLOT_ID"
+                      dataAdFormat="fluid"
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </div>
+                </div>
+              )}
+            </React.Fragment>
           ))}
         </div>
 
@@ -396,11 +425,30 @@ export default function Home() {
           </div>
         )}
 
+        {/* Ad Banner before How to Use Section */}
+        {process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID && (
+          <div style={{
+            marginTop: '64px',
+            marginBottom: '32px',
+            padding: '20px',
+            backgroundColor: systemTheme.colors.background,
+            border: `1px solid ${systemTheme.colors.border}`,
+            borderRadius: '12px',
+            textAlign: 'center',
+          }}>
+            <AdBanner 
+              dataAdSlot="YOUR_HORIZONTAL_AD_SLOT_ID"
+              dataAdFormat="horizontal"
+              style={{ minHeight: '90px' }}
+            />
+          </div>
+        )}
+
         {/* How to Use Section */}
         <section style={{
           marginTop: '96px',
           paddingTop: '64px',
-          borderTop: '1px solid #e2e8f0',
+          borderTop: `1px solid ${systemTheme.colors.border}`,
           opacity: 0,
           animation: 'fadeIn 0.6s ease-out 0.4s forwards',
         }}>
@@ -622,8 +670,8 @@ export default function Home() {
       <footer style={{
         marginTop: '96px',
         padding: isMobile ? '32px 16px' : '48px 32px',
-        borderTop: '1px solid #e2e8f0',
-        backgroundColor: '#ffffff',
+        borderTop: `1px solid ${systemTheme.colors.border}`,
+        backgroundColor: systemTheme.colors.background,
       }}>
         <div style={{ 
           maxWidth: '1400px',
@@ -635,7 +683,7 @@ export default function Home() {
           }}>
             <p style={{
               fontSize: '15px',
-              color: '#64748b',
+              color: systemTheme.colors.secondary,
               marginBottom: '12px',
             }}>
               Made with ❤️ for Notion users everywhere
@@ -673,33 +721,46 @@ export default function Home() {
                 View on GitHub
               </a>
               <a 
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/privacy"
                 style={{
                   fontSize: '14px',
-                  color: '#0f172a',
+                  color: systemTheme.colors.foreground,
                   textDecoration: 'none',
                   fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
                   transition: 'color 0.2s ease',
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.color = '#3b82f6';
+                  e.currentTarget.style.color = systemTheme.colors.primary;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.color = '#0f172a';
+                  e.currentTarget.style.color = systemTheme.colors.foreground;
                 }}
               >
-                Share on Twitter
+                Privacy Policy
+              </a>
+              <a 
+                href="/terms"
+                style={{
+                  fontSize: '14px',
+                  color: systemTheme.colors.foreground,
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  transition: 'color 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = systemTheme.colors.primary;
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = systemTheme.colors.foreground;
+                }}
+              >
+                Terms of Service
               </a>
             </div>
           </div>
           <p style={{
             fontSize: '13px',
-            color: '#94a3b8',
+            color: systemTheme.colors.muted,
             margin: 0,
           }}>
             © 2024 Notion Widgets. Not affiliated with Notion.

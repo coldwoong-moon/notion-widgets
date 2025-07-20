@@ -46,6 +46,10 @@ cd notion-widgets
 # Install dependencies
 npm install
 
+# Copy environment variables
+cp .env.local.example .env.local
+# Edit .env.local and add your Google AdSense ID
+
 # Run development server
 npm run dev
 ```
