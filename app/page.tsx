@@ -77,7 +77,22 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="mb-6">
+          <h2 
+            className="text-xl font-light mb-2"
+            style={{ color: currentTheme.colors.primary }}
+          >
+            Widget Gallery
+          </h2>
+          <p 
+            className="text-sm"
+            style={{ color: currentTheme.colors.secondary }}
+          >
+            Click on any widget card to copy its embed URL
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 auto-rows-fr">
           {widgets.map((widget) => (
             <WidgetCard
               key={widget.id}
