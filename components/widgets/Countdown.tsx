@@ -8,7 +8,6 @@ interface CountdownProps {
 }
 
 export function Countdown({ theme }: CountdownProps) {
-  const targetDate = new Date('2025-01-01T00:00:00');
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -17,6 +16,7 @@ export function Countdown({ theme }: CountdownProps) {
   });
 
   useEffect(() => {
+    const targetDate = new Date('2025-01-01T00:00:00');
     const timer = setInterval(() => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
@@ -32,7 +32,7 @@ export function Countdown({ theme }: CountdownProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, []);
 
   const isNeumorphism = theme.id.includes('neumorphism');
   const isGlassmorphism = theme.id.includes('glassmorphism');
