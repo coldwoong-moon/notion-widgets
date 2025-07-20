@@ -1,3 +1,5 @@
+import { Locale } from '@/lib/i18n';
+
 export interface Theme {
   id: string;
   name: string;
@@ -38,5 +40,5 @@ export interface Widget {
     width: number;
     height: number;
   };
-  component: React.ComponentType<{ theme: Theme }>;
+  component: React.ComponentType<{ theme: Theme; locale?: Locale }>;
 }

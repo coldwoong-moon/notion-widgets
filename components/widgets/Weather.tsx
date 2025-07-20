@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
+import { t } from '@/translations';
 
 interface WeatherProps {
   theme: Theme;
+  locale?: Locale;
 }
 
-export function Weather({ theme }: WeatherProps) {
+export function Weather({ theme, locale = 'en' }: WeatherProps) {
   const [weather, setWeather] = useState({
     temp: 22,
     condition: 'Partly Cloudy',
@@ -45,7 +48,7 @@ export function Weather({ theme }: WeatherProps) {
   if (!mounted) {
     return (
       <WidgetContainer theme={theme} minHeight={280}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading weather...</div>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('weather.loading', locale)}</div>
       </WidgetContainer>
     );
   }
@@ -147,7 +150,7 @@ export function Weather({ theme }: WeatherProps) {
               color: theme.colors.muted,
               opacity: 0.6,
             }}>
-              Humidity
+              {t('weather.humidity', locale)}
             </div>
           </div>
 
@@ -173,7 +176,7 @@ export function Weather({ theme }: WeatherProps) {
               color: theme.colors.muted,
               opacity: 0.6,
             }}>
-              Wind
+              {t('weather.wind', locale)}
             </div>
           </div>
         </div>
@@ -185,7 +188,7 @@ export function Weather({ theme }: WeatherProps) {
           color: theme.colors.muted,
           opacity: 0.4,
         }}>
-          Updated just now
+          {t('weather.updatedNow', locale)}
         </div>
       </div>
     </WidgetContainer>

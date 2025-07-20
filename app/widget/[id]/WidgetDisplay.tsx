@@ -2,34 +2,28 @@
 
 import React, { useEffect, useState } from 'react';
 import { widgets } from '@/lib/widgets';
-import { themes } from '@/lib/themes';
+import { useSystemTheme } from '@/hooks/useSystemTheme';
+import { getLocale } from '@/lib/i18n';
 
 interface WidgetDisplayProps {
   widgetId: string;
 }
 
 export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
-  const [themeId, setThemeId] = useState('monochrome');
+  const systemTheme = useSystemTheme();
+  const [locale, setLocale] = useState(getLocale());
   
   useEffect(() => {
-    // Get theme from URL query parameters on client side
-    const params = new URLSearchParams(window.location.search);
-    const urlTheme = params.get('theme');
-    if (urlTheme && themes[urlTheme]) {
-      setThemeId(urlTheme);
-    }
+    setLocale(getLocale());
   }, []);
   
   const widget = widgets.find(w => w.id === widgetId);
-  const theme = themes[themeId] || themes.monochrome;
   
   if (!widget) {
     return null;
   }
 
   const WidgetComponent = widget.component;
-
-  const isGlassmorphism = theme.id.includes('glassmorphism');
 
   return (
     <div 
@@ -38,12 +32,9 @@ export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
         height: `${widget.defaultSize.height}px`,
         minHeight: `${widget.defaultSize.height}px`,
         maxHeight: `${widget.defaultSize.height}px`,
-        ...(isGlassmorphism && {
-          backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }),
       }}
     >
-      <WidgetComponent theme={theme} />
+      <WidgetComponent theme={systemTheme} locale={locale} />
     </div>
   );
 }

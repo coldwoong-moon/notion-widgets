@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
+import { t } from '@/translations';
 
 interface YearProgressProps {
   theme: Theme;
+  locale?: Locale;
 }
 
-export function YearProgress({ theme }: YearProgressProps) {
+export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -31,7 +34,7 @@ export function YearProgress({ theme }: YearProgressProps) {
   if (!mounted) {
     return (
       <WidgetContainer theme={theme} minHeight={280}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading...</div>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('yearProgress.loading', locale)}</div>
       </WidgetContainer>
     );
   }
@@ -65,7 +68,7 @@ export function YearProgress({ theme }: YearProgressProps) {
           opacity: 0.7,
           marginBottom: '32px',
         }}>
-          Year Progress
+          {t('yearProgress.title', locale)}
         </p>
 
         {/* Progress percentage */}
@@ -130,7 +133,7 @@ export function YearProgress({ theme }: YearProgressProps) {
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}>
-              Days Passed
+              {t('yearProgress.daysPassed', locale)}
             </div>
           </div>
 
@@ -154,7 +157,7 @@ export function YearProgress({ theme }: YearProgressProps) {
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}>
-              Days Left
+              {t('yearProgress.daysLeft', locale)}
             </div>
           </div>
         </div>

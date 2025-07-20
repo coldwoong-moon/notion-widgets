@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
 
 interface ClockProps {
   theme: Theme;
+  locale?: Locale;
 }
 
-export function Clock({ theme }: ClockProps) {
+export function Clock({ theme, locale = 'en' }: ClockProps) {
   const [time, setTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
 

@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '@/components/providers/ThemeProvider';
 import { EnhancedWidgetCard } from '@/components/EnhancedWidgetCard';
 import { widgets } from '@/lib/widgets';
+import { useSystemTheme } from '@/hooks/useSystemTheme';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Locale, locales, localeNames } from '@/lib/i18n';
 
 export default function Home() {
-  const { currentTheme, availableThemes, setTheme } = useTheme();
+  const systemTheme = useSystemTheme();
+  const { t, locale } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedLocale, setSelectedLocale] = useState<Locale>(locale);
   
   // Get unique categories
   const categories = ['all', ...new Set(widgets.map(w => w.category))];
@@ -24,6 +28,17 @@ export default function Home() {
       ? 'https://coldwoong-moon.github.io/notion-widgets'
       : window.location.origin
     : '';
+
+  // Handle language change
+  const handleLanguageChange = (newLocale: Locale) => {
+    setSelectedLocale(newLocale);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', newLocale);
+      window.history.pushState({}, '', url.toString());
+      window.location.reload();
+    }
+  };
 
   // Check if mobile
   useEffect(() => {
@@ -86,17 +101,21 @@ export default function Home() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      backgroundColor: '#f8fafc',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      backgroundColor: systemTheme.colors.background,
+      color: systemTheme.colors.foreground,
+      fontFamily: systemTheme.typography.fontFamily,
+      transition: 'background-color 0.3s ease, color 0.3s ease',
     }}>
       {/* Header */}
       <header style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: systemTheme.id === 'dark' 
+          ? 'rgba(0, 0, 0, 0.8)' 
+          : 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        borderBottom: `1px solid ${systemTheme.colors.border}`,
         transition: 'all 0.3s ease',
       }}>
         <div style={{
@@ -134,89 +153,51 @@ export default function Home() {
                 <h1 style={{
                   fontSize: isMobile ? '20px' : '24px',
                   fontWeight: '800',
-                  color: '#0f172a',
+                  color: systemTheme.colors.foreground,
                   margin: 0,
                   letterSpacing: '-0.025em',
                 }}>
-                  Notion Widgets
+                  {t('gallery.title')}
                 </h1>
                 {!isMobile && (
                   <p style={{
                     fontSize: '14px',
-                    color: '#64748b',
+                    color: systemTheme.colors.secondary,
                     margin: 0,
                   }}>
-                    Beautiful widgets for your workspace
+                    {t('gallery.subtitle')}
                   </p>
                 )}
               </div>
             </div>
             
-            {/* Theme Switcher */}
+            {/* Language Switcher */}
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: '12px' 
             }}>
-              {!isMobile && (
-                <span style={{ 
-                  fontSize: '13px', 
-                  color: '#64748b',
+              <select
+                value={selectedLocale}
+                onChange={(e) => handleLanguageChange(e.target.value as Locale)}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: `1px solid ${systemTheme.colors.border}`,
+                  backgroundColor: systemTheme.colors.background,
+                  color: systemTheme.colors.foreground,
+                  fontSize: '14px',
                   fontWeight: '500',
-                }}>
-                  Theme
-                </span>
-              )}
-              <div style={{
-                display: 'flex',
-                gap: '6px',
-                padding: '4px',
-                backgroundColor: '#f1f5f9',
-                borderRadius: '12px',
-              }}>
-                {availableThemes.map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => setTheme(theme.id)}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '8px',
-                      backgroundColor: theme.colors.primary,
-                      border: currentTheme.id === theme.id 
-                        ? '2px solid #0f172a' 
-                        : '2px solid transparent',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      position: 'relative',
-                    }}
-                    title={theme.name}
-                    aria-label={`Switch to ${theme.name} theme`}
-                    onMouseOver={(e) => {
-                      if (currentTheme.id !== theme.id) {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                      }
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  >
-                    {currentTheme.id === theme.id && (
-                      <span style={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '12px',
-                      }}>
-                        ✓
-                      </span>
-                    )}
-                  </button>
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+              >
+                {locales.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {localeNames[loc]}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
           </div>
         </div>
@@ -227,9 +208,11 @@ export default function Home() {
         position: 'sticky',
         top: isMobile ? '60px' : '72px',
         zIndex: 90,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: systemTheme.id === 'dark'
+          ? 'rgba(0, 0, 0, 0.8)' 
+          : 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        borderBottom: `1px solid ${systemTheme.colors.border}`,
       }}>
         <div style={{
           maxWidth: '1400px',
@@ -254,14 +237,14 @@ export default function Home() {
                   fontSize: '14px',
                   fontWeight: '600',
                   backgroundColor: selectedCategory === category 
-                    ? '#0f172a' 
+                    ? systemTheme.colors.primary 
                     : 'transparent',
                   color: selectedCategory === category 
-                    ? '#ffffff' 
-                    : '#64748b',
+                    ? systemTheme.colors.background 
+                    : systemTheme.colors.secondary,
                   border: selectedCategory === category
                     ? 'none'
-                    : '1px solid #e2e8f0',
+                    : `1px solid ${systemTheme.colors.border}`,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   transition: 'all 0.2s ease',
@@ -320,21 +303,20 @@ export default function Home() {
           <h2 style={{
             fontSize: isMobile ? '28px' : '36px',
             fontWeight: '800',
-            color: '#0f172a',
+            color: systemTheme.colors.foreground,
             marginBottom: '16px',
             letterSpacing: '-0.025em',
           }}>
-            Transform Your Notion Pages
+            {t('gallery.title')}
           </h2>
           <p style={{
             fontSize: isMobile ? '16px' : '18px',
-            color: '#64748b',
+            color: systemTheme.colors.secondary,
             maxWidth: '600px',
             margin: '0 auto',
             lineHeight: '1.6',
           }}>
-            Add beautiful, functional widgets to your Notion workspace with just a simple embed. 
-            No setup required.
+            {t('gallery.subtitle')}
           </p>
         </div>
 
@@ -357,8 +339,9 @@ export default function Home() {
             >
               <EnhancedWidgetCard
                 widget={widget}
-                theme={currentTheme}
+                theme={systemTheme}
                 baseUrl={baseUrl}
+                locale={locale}
               />
             </div>
           ))}
@@ -426,10 +409,10 @@ export default function Home() {
             fontWeight: '800',
             textAlign: 'center',
             marginBottom: '48px',
-            color: '#0f172a',
+            color: systemTheme.colors.foreground,
             letterSpacing: '-0.025em',
           }}>
-            How It Works
+            {t('gallery.embedInNotion')}
           </h2>
           <div style={{
             display: 'grid',
@@ -464,8 +447,8 @@ export default function Home() {
                   textAlign: 'center',
                   padding: '32px 24px',
                   borderRadius: '16px',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e2e8f0',
+                  backgroundColor: systemTheme.colors.background,
+                  border: `1px solid ${systemTheme.colors.border}`,
                   transition: 'all 0.3s ease',
                   cursor: 'default',
                   position: 'relative',

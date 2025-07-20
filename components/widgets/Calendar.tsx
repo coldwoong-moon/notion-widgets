@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
+import { t } from '@/translations';
 
 interface CalendarProps {
   theme: Theme;
+  locale?: Locale;
 }
 
-export function Calendar({ theme }: CalendarProps) {
+export function Calendar({ theme, locale = 'en' }: CalendarProps) {
   const [currentDate] = useState(new Date());
   const [mounted, setMounted] = useState(false);
 
@@ -28,8 +31,20 @@ export function Calendar({ theme }: CalendarProps) {
   const month = currentDate.getMonth();
   const today = currentDate.getDate();
   
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = [
+    t('calendar.january', locale),
+    t('calendar.february', locale),
+    t('calendar.march', locale),
+    t('calendar.april', locale),
+    t('calendar.may', locale),
+    t('calendar.june', locale),
+    t('calendar.july', locale),
+    t('calendar.august', locale),
+    t('calendar.september', locale),
+    t('calendar.october', locale),
+    t('calendar.november', locale),
+    t('calendar.december', locale)
+  ];
   
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -84,7 +99,15 @@ export function Calendar({ theme }: CalendarProps) {
           textAlign: 'center',
         }}>
           {/* Day headers */}
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
+          {[
+            t('calendar.sunday', locale),
+            t('calendar.monday', locale),
+            t('calendar.tuesday', locale),
+            t('calendar.wednesday', locale),
+            t('calendar.thursday', locale),
+            t('calendar.friday', locale),
+            t('calendar.saturday', locale)
+          ].map((day, i) => (
             <div
               key={i}
               className="text-xs"
@@ -187,7 +210,7 @@ export function Calendar({ theme }: CalendarProps) {
             borderRadius: '4px',
             backgroundColor: theme.colors.primary,
           }} />
-          Today
+          {t('calendar.today', locale)}
         </div>
       </div>
     </WidgetContainer>

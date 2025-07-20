@@ -2,21 +2,24 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Widget, Theme } from '@/types/theme';
+import { Locale } from '@/lib/i18n';
+import { t, TranslationKey } from '@/translations';
 
 interface EnhancedWidgetCardProps {
   widget: Widget;
   theme: Theme;
   baseUrl: string;
+  locale?: Locale;
 }
 
-export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCardProps) {
+export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: EnhancedWidgetCardProps) {
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}`;
+  const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}&lang=${locale}`;
   const WidgetComponent = widget.component;
   
   useEffect(() => {
@@ -67,7 +70,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCar
     <article 
       ref={cardRef}
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: theme.colors.background,
         borderRadius: '16px',
         overflow: 'hidden',
         border: (isHovered || isFocused) ? '2px solid #3b82f6' : '2px solid transparent',
@@ -198,11 +201,11 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCar
           <h3 style={{
             fontSize: '18px',
             fontWeight: '700',
-            color: '#111827',
+            color: theme.colors.foreground,
             margin: 0,
             letterSpacing: '-0.025em',
           }}>
-            {widget.name}
+            {t(`widget.${widget.id}` as TranslationKey, locale)}
           </h3>
         </header>
         
@@ -270,7 +273,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCar
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  Copied!
+                  {t('gallery.urlCopied', locale)}
                 </>
               ) : (
                 <>
@@ -278,7 +281,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCar
                     <rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" strokeWidth="1.5"/>
                     <path d="M3 11V3H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
-                  Copy URL
+                  {t('gallery.copyUrl', locale)}
                 </>
               )}
             </span>
@@ -308,7 +311,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl }: EnhancedWidgetCar
               e.currentTarget.style.color = '#6b7280';
             }}
             aria-label="Preview widget in new tab"
-            title="Preview"
+            title={t('gallery.preview', locale)}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 2H4C2.89543 2 2 2.89543 2 4V12C2 13.1046 2.89543 14 4 14H12C13.1046 14 14 13.1046 14 12V10M10 2H14M14 2V6M14 2L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>

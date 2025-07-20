@@ -3,9 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
+import { t } from '@/translations';
 
 interface QuoteProps {
   theme: Theme;
+  locale?: Locale;
 }
 
 const quotes = [
@@ -19,7 +22,7 @@ const quotes = [
   { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
 ];
 
-export function Quote({ theme }: QuoteProps) {
+export function Quote({ theme, locale = 'en' }: QuoteProps) {
   const [currentQuote, setCurrentQuote] = useState(quotes[0]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -40,7 +43,7 @@ export function Quote({ theme }: QuoteProps) {
   if (!mounted) {
     return (
       <WidgetContainer theme={theme} minHeight={280}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading quote...</div>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('quote.loading', locale)}</div>
       </WidgetContainer>
     );
   }

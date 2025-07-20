@@ -3,12 +3,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Theme } from '@/types/theme';
 import { WidgetContainer } from './WidgetContainer';
+import { Locale } from '@/lib/i18n';
+import { t } from '@/translations';
 
 interface CountdownProps {
   theme: Theme;
+  locale?: Locale;
 }
 
-export function Countdown({ theme }: CountdownProps) {
+export function Countdown({ theme, locale = 'en' }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -16,7 +19,6 @@ export function Countdown({ theme }: CountdownProps) {
     seconds: 0,
   });
   const [mounted, setMounted] = useState(false);
-  const [targetTitle] = useState('New Year 2025');
   const targetDate = useMemo(() => new Date('2025-01-01T00:00:00'), []);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export function Countdown({ theme }: CountdownProps) {
   if (!mounted) {
     return (
       <WidgetContainer theme={theme} minHeight={280}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading countdown...</div>
+        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('countdown.loading', locale)}</div>
       </WidgetContainer>
     );
   }
@@ -132,7 +134,7 @@ export function Countdown({ theme }: CountdownProps) {
             opacity: 0.8,
           }}
         >
-          Countdown to
+          {t('countdown.to', locale)}
         </h3>
         <h2
           className="text-2xl"
@@ -143,7 +145,7 @@ export function Countdown({ theme }: CountdownProps) {
             letterSpacing: '-0.02em',
           }}
         >
-          {targetTitle}
+          {t('countdown.newYear', locale)}
         </h2>
 
         {/* Countdown display */}
@@ -159,13 +161,13 @@ export function Countdown({ theme }: CountdownProps) {
               fontWeight: '700',
               marginBottom: '8px',
             }}>
-              🎉 Time&apos;s Up! 🎉
+              {t('countdown.expired', locale)}
             </div>
             <div className="text-base" style={{
               color: theme.colors.secondary,
               opacity: 0.8,
             }}>
-              The countdown has ended
+              {t('countdown.ended', locale)}
             </div>
           </div>
         ) : (
@@ -176,10 +178,10 @@ export function Countdown({ theme }: CountdownProps) {
               gap: '12px',
               marginBottom: '24px',
             }}>
-              <TimeUnit value={timeLeft.days} label="Days" />
-              <TimeUnit value={timeLeft.hours} label="Hours" />
-              <TimeUnit value={timeLeft.minutes} label="Mins" />
-              <TimeUnit value={timeLeft.seconds} label="Secs" />
+              <TimeUnit value={timeLeft.days} label={t('countdown.days', locale)} />
+              <TimeUnit value={timeLeft.hours} label={t('countdown.hours', locale)} />
+              <TimeUnit value={timeLeft.minutes} label={t('countdown.minutes', locale)} />
+              <TimeUnit value={timeLeft.seconds} label={t('countdown.seconds', locale)} />
             </div>
 
             {/* Progress bar */}
@@ -210,7 +212,7 @@ export function Countdown({ theme }: CountdownProps) {
           color: theme.colors.muted,
           opacity: 0.6,
         }}>
-          Target: {targetDate.toLocaleDateString('en-US', { 
+          {t('countdown.target', locale)}: {targetDate.toLocaleDateString(locale === 'en' ? 'en-US' : locale, { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
