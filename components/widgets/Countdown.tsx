@@ -32,7 +32,7 @@ export function Countdown({ theme }: CountdownProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [targetDate]);
 
   const isNeumorphism = theme.id.includes('neumorphism');
   const isGlassmorphism = theme.id.includes('glassmorphism');

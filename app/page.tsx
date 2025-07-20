@@ -54,23 +54,15 @@ export default function Home() {
 
       {/* Gallery Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Masonry-style Grid */}
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {widgets.map((widget, index) => (
-            <div
+        {/* Regular Grid Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {widgets.map((widget) => (
+            <WidgetCard
               key={widget.id}
-              className="break-inside-avoid"
-              style={{
-                // Vary heights for visual interest
-                transform: `translateY(${index % 2 === 0 ? '0' : '10'}px)`,
-              }}
-            >
-              <WidgetCard
-                widget={widget}
-                theme={currentTheme}
-                baseUrl={baseUrl}
-              />
-            </div>
+              widget={widget}
+              theme={currentTheme}
+              baseUrl={baseUrl}
+            />
           ))}
         </div>
 

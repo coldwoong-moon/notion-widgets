@@ -27,13 +27,9 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
 
   const WidgetComponent = widget.component;
 
-  // Use widget's aspect ratio for natural sizing
-  const aspectRatio = widget.defaultSize.width / widget.defaultSize.height;
-  const heightClass = aspectRatio > 1.5 ? 'h-56' : aspectRatio > 1 ? 'h-64' : 'h-72';
-
   return (
     <div
-      className={`group relative ${heightClass} rounded-2xl overflow-hidden cursor-pointer transition-all duration-300`}
+      className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCopy}
@@ -45,15 +41,20 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
         transform: isHovered ? 'scale(1.02)' : 'scale(1)',
       }}
     >
-      {/* Widget Preview - Full Size */}
-      <div className="absolute inset-0">
-        <WidgetComponent theme={theme} />
-      </div>
-      
-      {/* Gradient Overlay */}
+      {/* Widget Preview */}
       <div 
-        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-      />
+        className="relative w-full"
+        style={{ height: '250px' }}
+      >
+        <div className="absolute inset-0">
+          <WidgetComponent theme={theme} />
+        </div>
+        
+        {/* Gradient Overlay */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        />
+      </div>
       
       {/* Info Overlay - Only on Hover */}
       <div 
