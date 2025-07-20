@@ -11,12 +11,12 @@ interface WidgetCardProps {
 
 export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
   const [copied, setCopied] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   
   const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}`;
   const WidgetComponent = widget.component;
   
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await navigator.clipboard.writeText(widgetUrl);
       setCopied(true);
@@ -28,82 +28,83 @@ export function WidgetCard({ widget, theme, baseUrl }: WidgetCardProps) {
 
   return (
     <div className="group relative">
-      {/* Main Card */}
       <div 
-        className="rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg"
-        onClick={handleCopy}
+        className="rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-xl"
         style={{ 
           backgroundColor: theme.colors.background,
           border: `1px solid ${theme.colors.border}`,
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
         }}
-        onMouseEnter={() => setShowPreview(true)}
-        onMouseLeave={() => setShowPreview(false)}
       >
-        {/* Icon and Title */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">{widget.icon}</div>
-            <div>
-              <h3 className="text-lg font-semibold" style={{ color: theme.colors.primary }}>
-                {widget.name}
-              </h3>
-              <p className="text-xs" style={{ color: theme.colors.secondary }}>
-                {widget.category}
-              </p>
-            </div>
+        {/* Widget Preview - Always Visible */}
+        <div 
+          style={{ 
+            width: '100%',
+            height: '250px',
+            backgroundColor: theme.colors.muted,
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Scale the widget to fit */}
+          <div style={{ 
+            transform: 'scale(0.7)', 
+            transformOrigin: 'center',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <WidgetComponent theme={theme} />
           </div>
-        </div>
-        
-        {/* Description */}
-        <p className="text-sm mb-4" style={{ color: theme.colors.secondary }}>
-          {widget.description}
-        </p>
-        
-        {/* Widget Size & Status */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-mono" style={{ color: theme.colors.secondary, opacity: 0.7 }}>
-            {widget.defaultSize.width} × {widget.defaultSize.height}
-          </span>
           
-          {copied && (
-            <span className="text-xs font-medium" style={{ color: '#10b981' }}>
-              ✓ Copied!
-            </span>
-          )}
+          {/* Overlay gradient for better text visibility */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '60px',
+            background: `linear-gradient(to top, ${theme.colors.background}, transparent)`,
+          }} />
         </div>
-      </div>
-      
-      {/* Preview on Hover */}
-      {showPreview && (
-        <div className="absolute inset-x-0 top-full mt-2 z-50">
-          <div 
-            className="rounded-xl shadow-xl overflow-hidden"
-            style={{ 
-              backgroundColor: theme.colors.background,
-              border: `1px solid ${theme.colors.border}`,
-            }}
-          >
-            <div className="p-2">
-              <span className="text-xs font-medium" style={{ color: theme.colors.secondary }}>
-                Preview
-              </span>
-            </div>
-            <div 
-              style={{ 
-                width: '100%',
-                height: 200,
-                overflow: 'hidden',
-                backgroundColor: theme.colors.muted,
-              }}
-            >
-              <div style={{ transform: 'scale(0.6)', transformOrigin: 'top left' }}>
-                <WidgetComponent theme={theme} />
+        
+        {/* Widget Info */}
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{widget.icon}</span>
+              <div>
+                <h3 className="font-semibold" style={{ color: theme.colors.primary }}>
+                  {widget.name}
+                </h3>
+                <p className="text-xs" style={{ color: theme.colors.secondary, opacity: 0.7 }}>
+                  {widget.category}
+                </p>
               </div>
             </div>
           </div>
+          
+          <p className="text-sm mb-3" style={{ color: theme.colors.secondary }}>
+            {widget.description}
+          </p>
+          
+          {/* Copy Button */}
+          <button
+            onClick={handleCopy}
+            className="w-full py-2 px-4 rounded-lg text-sm font-medium transition-all"
+            style={{
+              backgroundColor: copied ? '#10b981' : theme.colors.primary,
+              color: theme.colors.background,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            {copied ? '✓ Copied!' : 'Copy Widget URL'}
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
