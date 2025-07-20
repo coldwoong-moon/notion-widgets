@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/components/providers/ThemeProvider';
-import { SimpleWidgetCard } from '@/components/SimpleWidgetCard';
+import { EnhancedWidgetCard } from '@/components/EnhancedWidgetCard';
 import { widgets } from '@/lib/widgets';
 
 export default function Home() {
   const { currentTheme, availableThemes, setTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isMobile, setIsMobile] = useState(false);
   
   // Get unique categories
   const categories = ['all', ...new Set(widgets.map(w => w.category))];
@@ -24,145 +25,342 @@ export default function Home() {
       : window.location.origin
     : '';
 
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Add CSS animations
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      @keyframes slideUp {
+        0% { transform: translateY(100%); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      if (style.parentNode) {
+        document.head.removeChild(style);
+      }
+    };
+  }, []);
+
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      backgroundColor: '#f8fafc',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    }}>
       {/* Header */}
       <header style={{
         position: 'sticky',
         top: 0,
-        zIndex: 50,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(8px)',
-        borderBottom: '1px solid #e5e7eb'
+        zIndex: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        transition: 'all 0.3s ease',
       }}>
         <div style={{
-          maxWidth: '1280px',
+          maxWidth: '1400px',
           margin: '0 auto',
-          padding: '0 24px'
+          padding: isMobile ? '0 16px' : '0 32px',
         }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '64px'
+            minHeight: isMobile ? '60px' : '72px',
+            gap: '16px',
           }}>
-            <div>
-              <h1 style={{
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#111827',
-                margin: 0
+            {/* Logo and title */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              gap: '12px',
+            }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
               }}>
-                🎨 Notion Widget Gallery
-              </h1>
-              <p style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                margin: 0
-              }}>
-                Beautiful widgets for your Notion workspace
-              </p>
+                ✨
+              </div>
+              <div>
+                <h1 style={{
+                  fontSize: isMobile ? '20px' : '24px',
+                  fontWeight: '800',
+                  color: '#0f172a',
+                  margin: 0,
+                  letterSpacing: '-0.025em',
+                }}>
+                  Notion Widgets
+                </h1>
+                {!isMobile && (
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#64748b',
+                    margin: 0,
+                  }}>
+                    Beautiful widgets for your workspace
+                  </p>
+                )}
+              </div>
             </div>
             
             {/* Theme Switcher */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', color: '#6b7280', marginRight: '8px' }}>Theme:</span>
-              {availableThemes.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => setTheme(theme.id)}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    backgroundColor: theme.colors.primary,
-                    border: currentTheme.id === theme.id ? '3px solid #111827' : '2px solid transparent',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s ease'
-                  }}
-                  title={theme.name}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                />
-              ))}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px' 
+            }}>
+              {!isMobile && (
+                <span style={{ 
+                  fontSize: '13px', 
+                  color: '#64748b',
+                  fontWeight: '500',
+                }}>
+                  Theme
+                </span>
+              )}
+              <div style={{
+                display: 'flex',
+                gap: '6px',
+                padding: '4px',
+                backgroundColor: '#f1f5f9',
+                borderRadius: '12px',
+              }}>
+                {availableThemes.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => setTheme(theme.id)}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: theme.colors.primary,
+                      border: currentTheme.id === theme.id 
+                        ? '2px solid #0f172a' 
+                        : '2px solid transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      position: 'relative',
+                    }}
+                    title={theme.name}
+                    aria-label={`Switch to ${theme.name} theme`}
+                    onMouseOver={(e) => {
+                      if (currentTheme.id !== theme.id) {
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
+                    {currentTheme.id === theme.id && (
+                      <span style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '12px',
+                      }}>
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Category Filter */}
-      <div style={{
+      <nav style={{
         position: 'sticky',
-        top: '64px',
-        zIndex: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(8px)',
-        borderBottom: '1px solid #e5e7eb'
+        top: isMobile ? '60px' : '72px',
+        zIndex: 90,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
       }}>
         <div style={{
-          maxWidth: '1280px',
+          maxWidth: '1400px',
           margin: '0 auto',
-          padding: '16px 24px'
+          padding: isMobile ? '12px 16px' : '16px 32px',
         }}>
           <div style={{
             display: 'flex',
             gap: '8px',
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
+            scrollbarWidth: 'thin',
+            paddingBottom: '4px',
           }}>
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
                 style={{
-                  padding: '8px 16px',
+                  padding: isMobile ? '8px 16px' : '10px 20px',
                   borderRadius: '999px',
                   fontSize: '14px',
-                  fontWeight: '500',
-                  backgroundColor: selectedCategory === category ? '#111827' : '#f3f4f6',
-                  color: selectedCategory === category ? '#ffffff' : '#4b5563',
-                  border: 'none',
+                  fontWeight: '600',
+                  backgroundColor: selectedCategory === category 
+                    ? '#0f172a' 
+                    : 'transparent',
+                  color: selectedCategory === category 
+                    ? '#ffffff' 
+                    : '#64748b',
+                  border: selectedCategory === category
+                    ? 'none'
+                    : '1px solid #e2e8f0',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: 0,
+                  animation: `fadeIn 0.3s ease-out ${index * 0.05}s forwards`,
+                }}
+                onMouseOver={(e) => {
+                  if (selectedCategory !== category) {
+                    e.currentTarget.style.backgroundColor = '#f1f5f9';
+                    e.currentTarget.style.color = '#0f172a';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (selectedCategory !== category) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#64748b';
+                  }
                 }}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
                 <span style={{
-                  marginLeft: '8px',
                   fontSize: '12px',
-                  opacity: 0.7
+                  opacity: 0.7,
+                  backgroundColor: selectedCategory === category 
+                    ? 'rgba(255, 255, 255, 0.2)' 
+                    : 'rgba(0, 0, 0, 0.05)',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
                 }}>
-                  ({category === 'all' ? widgets.length : widgets.filter(w => w.category === category).length})
+                  {category === 'all' 
+                    ? widgets.length 
+                    : widgets.filter(w => w.category === category).length}
                 </span>
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Main Content */}
       <main style={{
-        maxWidth: '1280px',
+        maxWidth: '1400px',
         margin: '0 auto',
-        padding: '32px 24px'
+        padding: isMobile ? '24px 16px' : '40px 32px',
       }}>
-        {/* Widget Gallery Grid - 확실한 그리드 레이아웃 */}
+        {/* Hero Section */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '48px',
+          opacity: 0,
+          animation: 'fadeIn 0.6s ease-out 0.2s forwards',
+        }}>
+          <h2 style={{
+            fontSize: isMobile ? '28px' : '36px',
+            fontWeight: '800',
+            color: '#0f172a',
+            marginBottom: '16px',
+            letterSpacing: '-0.025em',
+          }}>
+            Transform Your Notion Pages
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '18px',
+            color: '#64748b',
+            maxWidth: '600px',
+            margin: '0 auto',
+            lineHeight: '1.6',
+          }}>
+            Add beautiful, functional widgets to your Notion workspace with just a simple embed. 
+            No setup required.
+          </p>
+        </div>
+
+        {/* Widget Gallery Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '24px',
-          width: '100%'
+          gridTemplateColumns: isMobile 
+            ? '1fr' 
+            : 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: isMobile ? '16px' : '24px',
+          width: '100%',
         }}>
-          {filteredWidgets.map((widget) => (
-            <SimpleWidgetCard
+          {filteredWidgets.map((widget, index) => (
+            <div
               key={widget.id}
-              widget={widget}
-              theme={currentTheme}
-              baseUrl={baseUrl}
-            />
+              style={{
+                opacity: 0,
+                animation: `fadeIn 0.5s ease-out ${index * 0.05}s forwards`,
+              }}
+            >
+              <EnhancedWidgetCard
+                widget={widget}
+                theme={currentTheme}
+                baseUrl={baseUrl}
+              />
+            </div>
           ))}
         </div>
 
@@ -170,205 +368,359 @@ export default function Home() {
         {filteredWidgets.length === 0 && (
           <div style={{
             textAlign: 'center',
-            padding: '80px 0',
-            color: '#6b7280'
+            padding: '80px 20px',
+            opacity: 0,
+            animation: 'fadeIn 0.5s ease-out forwards',
           }}>
-            <p>No widgets found in this category.</p>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+              opacity: 0.5,
+            }}>
+              🔍
+            </div>
+            <p style={{
+              fontSize: '18px',
+              color: '#64748b',
+              marginBottom: '24px',
+            }}>
+              No widgets found in this category
+            </p>
+            <button
+              onClick={() => setSelectedCategory('all')}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#0f172a',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#1e293b';
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#0f172a';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              View All Widgets
+            </button>
           </div>
         )}
 
         {/* How to Use Section */}
-        <div style={{
-          marginTop: '80px',
-          paddingTop: '48px',
-          borderTop: '1px solid #e5e7eb'
+        <section style={{
+          marginTop: '96px',
+          paddingTop: '64px',
+          borderTop: '1px solid #e2e8f0',
+          opacity: 0,
+          animation: 'fadeIn 0.6s ease-out 0.4s forwards',
         }}>
           <h2 style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
+            fontSize: isMobile ? '28px' : '32px',
+            fontWeight: '800',
             textAlign: 'center',
             marginBottom: '48px',
-            color: '#111827'
+            color: '#0f172a',
+            letterSpacing: '-0.025em',
           }}>
-            How to Use
+            How It Works
           </h2>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '32px',
-            maxWidth: '800px',
-            margin: '0 auto'
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? '24px' : '32px',
+            maxWidth: '1000px',
+            margin: '0 auto',
           }}>
-            <div style={{
-              textAlign: 'center',
-              padding: '24px',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                margin: '0 auto 16px',
-                borderRadius: '50%',
-                backgroundColor: '#ddd6fe',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px'
-              }}>
-                🎨
+            {[
+              {
+                icon: '🎯',
+                title: 'Choose a Widget',
+                description: 'Browse our collection and find the perfect widget for your needs',
+                color: '#8b5cf6',
+              },
+              {
+                icon: '📋',
+                title: 'Copy the URL',
+                description: 'Click the Copy URL button to get the widget embed link',
+                color: '#3b82f6',
+              },
+              {
+                icon: '✨',
+                title: 'Embed in Notion',
+                description: 'Type /embed in Notion and paste the URL to add your widget',
+                color: '#10b981',
+              },
+            ].map((step, index) => (
+              <div
+                key={index}
+                style={{
+                  textAlign: 'center',
+                  padding: '32px 24px',
+                  borderRadius: '16px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  transition: 'all 0.3s ease',
+                  cursor: 'default',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.borderColor = step.color;
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = '#e2e8f0';
+                }}
+              >
+                {/* Step number */}
+                <div style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  width: '28px',
+                  height: '28px',
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  color: '#64748b',
+                }}>
+                  {index + 1}
+                </div>
+                
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  margin: '0 auto 20px',
+                  borderRadius: '16px',
+                  backgroundColor: `${step.color}15`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '32px',
+                  transition: 'transform 0.3s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                }}
+                >
+                  {step.icon}
+                </div>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  marginBottom: '12px',
+                  color: '#0f172a',
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontSize: '15px',
+                  color: '#64748b',
+                  lineHeight: '1.6',
+                  margin: 0,
+                }}>
+                  {step.description}
+                </p>
               </div>
-              <h3 style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                marginBottom: '8px',
-                color: '#111827'
-              }}>
-                Choose a Widget
-              </h3>
-              <p style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                lineHeight: '1.5'
-              }}>
-                Browse our gallery and select a widget that fits your needs
-              </p>
-            </div>
-            
-            <div style={{
-              textAlign: 'center',
-              padding: '24px',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                margin: '0 auto 16px',
-                borderRadius: '50%',
-                backgroundColor: '#fde68a',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px'
-              }}>
-                📋
-              </div>
-              <h3 style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                marginBottom: '8px',
-                color: '#111827'
-              }}>
-                Copy Widget URL
-              </h3>
-              <p style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                lineHeight: '1.5'
-              }}>
-                Click the &quot;Copy URL&quot; button on any widget card
-              </p>
-            </div>
-            
-            <div style={{
-              textAlign: 'center',
-              padding: '24px',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                margin: '0 auto 16px',
-                borderRadius: '50%',
-                backgroundColor: '#a7f3d0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px'
-              }}>
-                📝
-              </div>
-              <h3 style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                marginBottom: '8px',
-                color: '#111827'
-              }}>
-                Embed in Notion
-              </h3>
-              <p style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                lineHeight: '1.5'
-              }}>
-                Type /embed in Notion and paste the URL
-              </p>
-            </div>
+            ))}
           </div>
-        </div>
+        </section>
+
+        {/* Features Section */}
+        <section style={{
+          marginTop: '96px',
+          textAlign: 'center',
+          opacity: 0,
+          animation: 'fadeIn 0.6s ease-out 0.6s forwards',
+        }}>
+          <h2 style={{
+            fontSize: isMobile ? '28px' : '32px',
+            fontWeight: '800',
+            marginBottom: '48px',
+            color: '#0f172a',
+            letterSpacing: '-0.025em',
+          }}>
+            Why Choose Our Widgets?
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: '24px',
+            maxWidth: '800px',
+            margin: '0 auto',
+          }}>
+            {[
+              { 
+                title: 'No Setup Required', 
+                desc: 'Just copy and paste - works instantly',
+                icon: '⚡'
+              },
+              { 
+                title: 'Beautiful Themes', 
+                desc: 'Multiple color themes to match your style',
+                icon: '🎨'
+              },
+              { 
+                title: 'Responsive Design', 
+                desc: 'Looks great on any device or screen size',
+                icon: '📱'
+              },
+              { 
+                title: 'Always Free', 
+                desc: 'All widgets are completely free to use',
+                icon: '🎁'
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '16px',
+                  padding: '24px',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  textAlign: 'left',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateX(4px)';
+                  e.currentTarget.style.borderColor = '#3b82f6';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateX(0)';
+                  e.currentTarget.style.borderColor = '#e2e8f0';
+                }}
+              >
+                <span style={{ fontSize: '24px' }}>{feature.icon}</span>
+                <div>
+                  <h3 style={{
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    marginBottom: '4px',
+                  }}>
+                    {feature.title}
+                  </h3>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#64748b',
+                    margin: 0,
+                    lineHeight: '1.5',
+                  }}>
+                    {feature.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
       <footer style={{
-        marginTop: '80px',
-        padding: '32px 0',
-        borderTop: '1px solid #e5e7eb',
-        backgroundColor: '#f9fafb'
+        marginTop: '96px',
+        padding: isMobile ? '32px 16px' : '48px 32px',
+        borderTop: '1px solid #e2e8f0',
+        backgroundColor: '#ffffff',
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            marginBottom: '8px'
+        <div style={{ 
+          maxWidth: '1400px',
+          margin: '0 auto',
+          textAlign: 'center',
+        }}>
+          <div style={{
+            marginBottom: '24px',
           }}>
-            Made with ❤️ for Notion users
+            <p style={{
+              fontSize: '15px',
+              color: '#64748b',
+              marginBottom: '12px',
+            }}>
+              Made with ❤️ for Notion users everywhere
+            </p>
+            <div style={{
+              display: 'flex',
+              gap: '24px',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}>
+              <a 
+                href="https://github.com/coldwoong-moon/notion-widgets"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'color 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = '#3b82f6';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = '#0f172a';
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                View on GitHub
+              </a>
+              <a 
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'color 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = '#3b82f6';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = '#0f172a';
+                }}
+              >
+                Share on Twitter
+              </a>
+            </div>
+          </div>
+          <p style={{
+            fontSize: '13px',
+            color: '#94a3b8',
+            margin: 0,
+          }}>
+            © 2024 Notion Widgets. Not affiliated with Notion.
           </p>
-          <a 
-            href="https://github.com/coldwoong-moon/notion-widgets"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontSize: '14px',
-              color: '#6b7280',
-              textDecoration: 'none'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
-            onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
-          >
-            View on GitHub
-          </a>
         </div>
       </footer>
     </div>
