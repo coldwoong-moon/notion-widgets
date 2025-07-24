@@ -40,5 +40,9 @@ export interface Widget {
     width: number;
     height: number;
   };
-  component: React.ComponentType<{ theme: Theme; locale?: Locale }>;
+  notion: {
+    width: number;
+    height: number;
+  };
+  component: React.ComponentType<{ theme: Theme; locale?: Locale; notion: { width: number; height: number } }>;
 }

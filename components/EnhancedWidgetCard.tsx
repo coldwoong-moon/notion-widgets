@@ -98,7 +98,8 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
       {/* Widget Preview with loading state */}
       <div style={{
         position: 'relative',
-        height: '240px',
+        height: 'auto',
+        aspectRatio: `${widget.notion.width} / ${widget.notion.height}`,
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         display: 'flex',
         alignItems: 'center',
@@ -131,7 +132,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
           opacity: isPreviewLoaded ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out',
         }}>
-          <WidgetComponent theme={theme} />
+          <WidgetComponent theme={theme} notion={widget.notion} />
         </div>
         
         {/* Interactive overlay on hover */}

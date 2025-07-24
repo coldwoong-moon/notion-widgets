@@ -9,9 +9,13 @@ import { t } from '@/translations';
 interface CountdownProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
-export function Countdown({ theme, locale = 'en' }: CountdownProps) {
+export function Countdown({ theme, locale = 'en', notion }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -44,7 +48,7 @@ export function Countdown({ theme, locale = 'en' }: CountdownProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('countdown.loading', locale)}</div>
       </WidgetContainer>
     );
@@ -114,7 +118,7 @@ export function Countdown({ theme, locale = 'en' }: CountdownProps) {
   const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         maxWidth: '500px',

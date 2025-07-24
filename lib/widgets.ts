@@ -17,6 +17,10 @@ export const widgets: Widget[] = [
       width: 300,
       height: 200,
     },
+    notion: {
+      width: 3,
+      height: 2,
+    },
     component: Clock,
   },
   {
@@ -28,6 +32,10 @@ export const widgets: Widget[] = [
     defaultSize: {
       width: 350,
       height: 400,
+    },
+    notion: {
+      width: 3,
+      height: 3,
     },
     component: Calendar,
   },
@@ -41,6 +49,10 @@ export const widgets: Widget[] = [
       width: 300,
       height: 250,
     },
+    notion: {
+      width: 2,
+      height: 2,
+    },
     component: Weather,
   },
   {
@@ -52,6 +64,10 @@ export const widgets: Widget[] = [
     defaultSize: {
       width: 350,
       height: 300,
+    },
+    notion: {
+      width: 4,
+      height: 2,
     },
     component: YearProgress,
   },
@@ -65,6 +81,10 @@ export const widgets: Widget[] = [
       width: 400,
       height: 250,
     },
+    notion: {
+      width: 4,
+      height: 2,
+    },
     component: Quote,
   },
   {
@@ -76,6 +96,10 @@ export const widgets: Widget[] = [
     defaultSize: {
       width: 400,
       height: 200,
+    },
+    notion: {
+      width: 4,
+      height: 2,
     },
     component: Countdown,
   },

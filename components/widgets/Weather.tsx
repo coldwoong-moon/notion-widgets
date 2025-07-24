@@ -9,9 +9,13 @@ import { t } from '@/translations';
 interface WeatherProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
-export function Weather({ theme, locale = 'en' }: WeatherProps) {
+export function Weather({ theme, locale = 'en', notion }: WeatherProps) {
   const [weather, setWeather] = useState({
     temp: 22,
     condition: 'Partly Cloudy',
@@ -47,14 +51,14 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('weather.loading', locale)}</div>
       </WidgetContainer>
     );
   }
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         height: '100%',

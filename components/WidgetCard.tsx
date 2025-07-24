@@ -51,7 +51,10 @@ export function WidgetCard({ widget, theme, baseUrl, onCustomize }: WidgetCardPr
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Widget Preview - 실제 위젯이 잘 보이도록 */}
-      <div className="relative h-52 bg-white dark:bg-slate-950 overflow-hidden border-b">
+      <div
+        className="relative bg-white dark:bg-slate-950 overflow-hidden border-b"
+        style={{ aspectRatio: `${widget.notion.width} / ${widget.notion.height}` }}
+      >
         {/* Animated gradient background on hover */}
         <div 
           className={`absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 transition-opacity duration-300 ${
@@ -62,7 +65,7 @@ export function WidgetCard({ widget, theme, baseUrl, onCustomize }: WidgetCardPr
         {/* Scale the widget to fit - 더 크게 표시 */}
         <div className="absolute inset-0 flex items-center justify-center p-4">
           <div className="transform scale-75 origin-center">
-            <WidgetComponent theme={theme} />
+            <WidgetComponent theme={theme} notion={widget.notion} />
           </div>
         </div>
         

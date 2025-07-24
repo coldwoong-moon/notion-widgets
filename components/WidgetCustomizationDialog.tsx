@@ -75,7 +75,7 @@ export function WidgetCustomizationDialog({
           {/* Widget Preview */}
           <div className="rounded-lg border bg-muted p-8">
             <div className="mx-auto" style={{ maxWidth: '400px' }}>
-              <WidgetComponent theme={theme} />
+              <WidgetComponent theme={theme} notion={widget.notion} />
             </div>
           </div>
 
