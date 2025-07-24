@@ -30,7 +30,6 @@ export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
       style={{ 
         width: '100%',
         height: '100%',
-        minHeight: '280px',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -38,7 +37,7 @@ export default function WidgetDisplay({ widgetId }: WidgetDisplayProps) {
         transition: 'background-color 0.3s ease',
       }}
     >
-      <WidgetComponent theme={systemTheme} locale={locale} />
+      <WidgetComponent theme={systemTheme} locale={locale} notion={widget.notion} />
     </div>
   );
 }

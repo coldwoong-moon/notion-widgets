@@ -9,9 +9,13 @@ import { t } from '@/translations';
 interface CalendarProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
-export function Calendar({ theme, locale = 'en' }: CalendarProps) {
+export function Calendar({ theme, locale = 'en', notion }: CalendarProps) {
   const [currentDate] = useState(new Date());
   const [mounted, setMounted] = useState(false);
 
@@ -21,7 +25,7 @@ export function Calendar({ theme, locale = 'en' }: CalendarProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading...</div>
       </WidgetContainer>
     );
@@ -63,7 +67,7 @@ export function Calendar({ theme, locale = 'en' }: CalendarProps) {
   }
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         maxWidth: '400px',

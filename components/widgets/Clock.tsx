@@ -8,9 +8,13 @@ import { Locale } from '@/lib/i18n';
 interface ClockProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
-export function Clock({ theme, locale = 'en' }: ClockProps) {
+export function Clock({ theme, notion }: ClockProps) {
   const [time, setTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
 
@@ -25,7 +29,7 @@ export function Clock({ theme, locale = 'en' }: ClockProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center' }}>
           <div className="text-6xl" style={{ opacity: 0.1 }}>--:--:--</div>
         </div>
@@ -46,7 +50,7 @@ export function Clock({ theme, locale = 'en' }: ClockProps) {
   const year = time.getFullYear();
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         height: '100%',

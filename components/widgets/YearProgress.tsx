@@ -9,9 +9,13 @@ import { t } from '@/translations';
 interface YearProgressProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
-export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
+export function YearProgress({ theme, locale = 'en', notion }: YearProgressProps) {
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -33,7 +37,7 @@ export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('yearProgress.loading', locale)}</div>
       </WidgetContainer>
     );
@@ -45,7 +49,7 @@ export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
   const daysRemaining = daysInYear - daysElapsed;
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         maxWidth: '400px',

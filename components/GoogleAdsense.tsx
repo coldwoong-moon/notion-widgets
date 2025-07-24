@@ -7,10 +7,16 @@ interface GoogleAdsenseProps {
   pId: string; // Publisher ID (ca-pub-XXXXXXXXXXXXXXXX)
 }
 
+declare global {
+  interface Window {
+    adsbygoogle?: unknown[];
+  }
+}
+
 export function GoogleAdsense({ pId }: GoogleAdsenseProps) {
   useEffect(() => {
     try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {
       console.error('AdSense error:', error);
     }
@@ -41,7 +47,7 @@ export function AdBanner({
 }: AdBannerProps) {
   useEffect(() => {
     try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {
       console.error('AdBanner error:', error);
     }

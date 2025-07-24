@@ -33,7 +33,7 @@ export default function TermsPage() {
       
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>3. Disclaimer</h2>
       <p style={{ marginBottom: '16px' }}>
-        The widgets are provided "as is" without warranty of any kind. We do not guarantee that the widgets
+        The widgets are provided &quot;as is&quot; without warranty of any kind. We do not guarantee that the widgets
         will be available at all times or that they will be error-free.
       </p>
       
@@ -46,13 +46,13 @@ export default function TermsPage() {
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>5. Third-Party Services</h2>
       <p style={{ marginBottom: '16px' }}>
         Our service displays advertisements through Google AdSense. Your use of our service is also subject
-        to Google's Terms of Service.
+        to Google&apos;s Terms of Service.
       </p>
       
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>6. Modifications</h2>
       <p style={{ marginBottom: '16px' }}>
         We reserve the right to modify these terms at any time. We will notify users of any changes by
-        updating the "Last updated" date.
+        updating the &quot;Last updated&quot; date.
       </p>
       
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>7. Contact Information</h2>

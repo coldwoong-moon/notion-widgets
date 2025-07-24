@@ -9,6 +9,10 @@ import { t } from '@/translations';
 interface QuoteProps {
   theme: Theme;
   locale?: Locale;
+  notion: {
+    width: number;
+    height: number;
+  };
 }
 
 const quotes = [
@@ -22,7 +26,7 @@ const quotes = [
   { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
 ];
 
-export function Quote({ theme, locale = 'en' }: QuoteProps) {
+export function Quote({ theme, locale = 'en', notion }: QuoteProps) {
   const [currentQuote, setCurrentQuote] = useState(quotes[0]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -42,14 +46,14 @@ export function Quote({ theme, locale = 'en' }: QuoteProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme} notion={notion}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('quote.loading', locale)}</div>
       </WidgetContainer>
     );
   }
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
         maxWidth: '600px',

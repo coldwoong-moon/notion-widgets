@@ -48,7 +48,8 @@ export function SimpleWidgetCard({ widget, theme, baseUrl }: SimpleWidgetCardPro
       {/* Widget Preview */}
       <div style={{
         position: 'relative',
-        height: '200px',
+        height: 'auto',
+        aspectRatio: `${widget.notion.width} / ${widget.notion.height}`,
         backgroundColor: '#f9fafb',
         display: 'flex',
         alignItems: 'center',
@@ -60,7 +61,7 @@ export function SimpleWidgetCard({ widget, theme, baseUrl }: SimpleWidgetCardPro
           transform: 'scale(0.6)',
           transformOrigin: 'center'
         }}>
-          <WidgetComponent theme={theme} />
+          <WidgetComponent theme={theme} notion={widget.notion} />
         </div>
         
         {/* Category badge */}
