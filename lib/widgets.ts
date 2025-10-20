@@ -42,7 +42,7 @@ export const widgets: Widget[] = [
     },
     notion: {
       width: 5,    // 5 units in 12-column grid (~42%)
-      height: 5.5, // Near-square aspect ratio
+      height: 6,   // Near-square aspect ratio (5:6)
     },
     component: Calendar,
   },
@@ -58,7 +58,7 @@ export const widgets: Widget[] = [
     },
     notion: {
       width: 4,    // 4 units in 12-column grid (~33%)
-      height: 3.5, // Slightly taller for weather details
+      height: 4,   // Slightly taller for weather details (4:4, 1:1 ratio)
     },
     component: Weather,
   },
@@ -74,7 +74,7 @@ export const widgets: Widget[] = [
     },
     notion: {
       width: 7,    // 7 units in 12-column grid (~58%)
-      height: 3.5, // Horizontal layout
+      height: 4,   // Horizontal layout (7:4 ratio)
     },
     component: YearProgress,
   },

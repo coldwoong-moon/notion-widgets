@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Theme } from '@/types/theme';
+import { NOTION_BORDER_RADIUS } from '@/lib/constants';
 
 interface WidgetContainerProps {
   children: React.ReactNode;
@@ -18,7 +19,12 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
 
   useEffect(() => {
     // Check if we're embedded in an iframe (Notion)
-    setIsEmbedded(window !== window.parent);
+    try {
+      setIsEmbedded(window !== window.parent);
+    } catch {
+      // In some security contexts, accessing window.parent throws an error
+      setIsEmbedded(false);
+    }
     
     const updateDimensions = () => {
       setDimensions({
@@ -74,7 +80,7 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
       transition: 'background-color 0.3s ease, color 0.3s ease',
       containerType: 'size',
       // Notion-optimized styling
-      borderRadius: isEmbedded ? '0' : '3px', // Notion uses subtle 3px radius
+      borderRadius: isEmbedded ? '0' : NOTION_BORDER_RADIUS,
       maxWidth: '100%',
       minHeight: '100%',
     }}>

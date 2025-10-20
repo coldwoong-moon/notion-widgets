@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 
+import { SYSTEM_FONT_FAMILY } from '@/lib/constants';
+
 // Notion-aligned color themes
 // Based on Notion's official light and dark mode color schemes
 const lightTheme: Theme = {
@@ -18,7 +20,7 @@ const lightTheme: Theme = {
     border: '#e9e9e7',        // Notion's light border
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontFamily: SYSTEM_FONT_FAMILY,
     fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
@@ -42,7 +44,7 @@ const darkTheme: Theme = {
     border: '#373737',        // Notion's dark mode border
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontFamily: SYSTEM_FONT_FAMILY,
     fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
