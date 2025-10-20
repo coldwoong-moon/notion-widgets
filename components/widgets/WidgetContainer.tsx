@@ -25,7 +25,7 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
       // In some security contexts, accessing window.parent throws an error
       setIsEmbedded(false);
     }
-    
+
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,
@@ -35,7 +35,7 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
 
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
-    
+
     // Use ResizeObserver for better height detection
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -43,9 +43,9 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
         setDimensions(prev => ({ ...prev, height }));
       }
     });
-    
+
     resizeObserver.observe(document.body);
-    
+
     return () => {
       window.removeEventListener('resize', updateDimensions);
       resizeObserver.disconnect();
@@ -65,7 +65,9 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
     <div style={{
       width: '100%',
       height: '100%',
-      aspectRatio: `${aspectRatio}`,
+      // Only apply aspectRatio when embedded to allow Notion to control the size
+      // When standalone, parent container defines the size via defaultSize
+      ...(isEmbedded && { aspectRatio: `${aspectRatio}` }),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',

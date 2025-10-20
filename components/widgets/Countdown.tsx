@@ -121,9 +121,9 @@ export function Countdown({ theme, locale = 'en', notion }: CountdownProps) {
     <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
-        maxWidth: '500px',
+        maxWidth: '100%',
         margin: '0 auto',
-        padding: '24px',
+        padding: '8px',
         textAlign: 'center',
       }}>
         {/* Target title */}
