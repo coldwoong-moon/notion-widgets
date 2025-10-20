@@ -52,9 +52,9 @@ export function YearProgress({ theme, locale = 'en', notion }: YearProgressProps
     <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '100%',
         margin: '0 auto',
-        padding: '24px',
+        padding: '8px',
         textAlign: 'center',
       }}>
         {/* Year title */}

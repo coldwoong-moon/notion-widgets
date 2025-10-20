@@ -70,9 +70,9 @@ export function Calendar({ theme, locale = 'en', notion }: CalendarProps) {
     <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '100%',
         margin: '0 auto',
-        padding: '24px',
+        padding: '8px',
       }}>
         {/* Header */}
         <div style={{

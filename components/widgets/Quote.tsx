@@ -56,9 +56,9 @@ export function Quote({ theme, locale = 'en', notion }: QuoteProps) {
     <WidgetContainer theme={theme} notion={notion}>
       <div style={{
         width: '100%',
-        maxWidth: '600px',
+        maxWidth: '100%',
         margin: '0 auto',
-        padding: '32px',
+        padding: '12px',
         textAlign: 'center',
         position: 'relative',
       }}>
