@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAdsense } from "@/components/GoogleAdsense";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { SYSTEM_FONT_FAMILY } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Notion Widgets Gallery",
@@ -21,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
+      <body style={{ fontFamily: SYSTEM_FONT_FAMILY }} className="antialiased">
         {process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID && (
           <GoogleAdsense pId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID} />
         )}

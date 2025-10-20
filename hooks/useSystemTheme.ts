@@ -3,20 +3,24 @@
 import { useState, useEffect } from 'react';
 import { Theme } from '@/types/theme';
 
+import { SYSTEM_FONT_FAMILY } from '@/lib/constants';
+
+// Notion-aligned color themes
+// Based on Notion's official light and dark mode color schemes
 const lightTheme: Theme = {
   id: 'light',
   name: 'Light',
   colors: {
     background: '#ffffff',
-    foreground: '#000000',
-    primary: '#0066cc',
-    secondary: '#666666',
-    accent: '#0099ff',
-    muted: '#999999',
-    border: '#e5e5e5',
+    foreground: '#37352f',    // Notion's light mode text color
+    primary: '#2383e2',       // Notion's blue accent
+    secondary: '#787774',     // Notion's secondary text
+    accent: '#0b6e99',        // Notion's darker blue
+    muted: '#9b9a97',         // Notion's muted text
+    border: '#e9e9e7',        // Notion's light border
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontFamily: SYSTEM_FONT_FAMILY,
     fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
@@ -31,16 +35,16 @@ const darkTheme: Theme = {
   id: 'dark',
   name: 'Dark',
   colors: {
-    background: '#191919',  // Notion's dark mode background
-    foreground: '#e6e6e5',  // Notion's dark mode text
-    primary: '#66b3ff',
-    secondary: '#999999',
-    accent: '#99ccff',
-    muted: '#666666',
-    border: '#373737',      // Notion's dark mode border
+    background: '#191919',    // Notion's dark mode background
+    foreground: '#e6e6e5',    // Notion's dark mode text
+    primary: '#529cca',       // Notion's blue accent in dark mode
+    secondary: '#9b9a97',     // Notion's secondary text in dark mode
+    accent: '#6cb4e8',        // Notion's lighter blue
+    muted: '#6f6f6f',         // Notion's muted text in dark mode
+    border: '#373737',        // Notion's dark mode border
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontFamily: SYSTEM_FONT_FAMILY,
     fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
