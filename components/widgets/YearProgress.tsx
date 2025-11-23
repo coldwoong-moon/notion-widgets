@@ -33,7 +33,7 @@ export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('yearProgress.loading', locale)}</div>
       </WidgetContainer>
     );
@@ -45,7 +45,7 @@ export function YearProgress({ theme, locale = 'en' }: YearProgressProps) {
   const daysRemaining = daysInYear - daysElapsed;
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme}>
       <div style={{
         width: '100%',
         maxWidth: '400px',

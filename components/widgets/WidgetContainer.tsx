@@ -6,15 +6,12 @@ import { Theme } from '@/types/theme';
 interface WidgetContainerProps {
   children: React.ReactNode;
   theme: Theme;
-  minHeight?: number;
 }
 
-export function WidgetContainer({ children, theme, minHeight = 280 }: WidgetContainerProps) {
+export function WidgetContainer({ children, theme }: WidgetContainerProps) {
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,
@@ -44,7 +41,6 @@ export function WidgetContainer({ children, theme, minHeight = 280 }: WidgetCont
   // Determine size based on viewport
   const isSmall = dimensions.height < 350;
   const isMedium = dimensions.height >= 350 && dimensions.height < 500;
-  const isLarge = dimensions.height >= 500;
 
   // Calculate responsive padding
   const padding = isSmall ? '12px' : isMedium ? '20px' : '28px';
@@ -52,8 +48,7 @@ export function WidgetContainer({ children, theme, minHeight = 280 }: WidgetCont
   return (
     <div style={{
       width: '100%',
-      minHeight: `${minHeight}px`,
-      height: '100%',
+      minHeight: '100%',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',

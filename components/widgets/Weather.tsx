@@ -11,50 +11,105 @@ interface WeatherProps {
   locale?: Locale;
 }
 
+const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+
+const getWeatherIcon = (iconCode: string) => {
+  const iconMap: { [key: string]: string } = {
+    '01d': '☀️', '01n': '🌙',
+    '02d': '⛅️', '02n': '☁️',
+    '03d': '☁️', '03n': '☁️',
+    '04d': '☁️', '04n': '☁️',
+    '09d': '🌧️', '09n': '🌧️',
+    '10d': '🌦️', '10n': '🌧️',
+    '11d': '⛈️', '11n': '⛈️',
+    '13d': '❄️', '13n': '❄️',
+    '50d': '🌫️', '50n': '🌫️',
+  };
+  return iconMap[iconCode] || '❓';
+};
+
 export function Weather({ theme, locale = 'en' }: WeatherProps) {
-  const [weather, setWeather] = useState({
-    temp: 22,
-    condition: 'Partly Cloudy',
-    location: 'San Francisco',
-    humidity: 65,
-    wind: 12,
-    icon: '⛅',
-  });
+  const [weather, setWeather] = useState<{
+    temp: number;
+    condition: string;
+    location: string;
+    humidity: number;
+    wind: number;
+    icon: string;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Simulate weather variations
-    const interval = setInterval(() => {
-      const conditions = [
-        { condition: 'Sunny', icon: '☀️', temp: 25 },
-        { condition: 'Partly Cloudy', icon: '⛅', temp: 22 },
-        { condition: 'Cloudy', icon: '☁️', temp: 18 },
-        { condition: 'Rainy', icon: '🌧️', temp: 16 },
-        { condition: 'Thunderstorm', icon: '⛈️', temp: 15 },
-      ];
-      const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-      setWeather(prev => ({
-        ...prev,
-        ...randomCondition,
-        humidity: 50 + Math.floor(Math.random() * 40),
-        wind: 5 + Math.floor(Math.random() * 20),
-      }));
-    }, 30000); // Update every 30 seconds
 
-    return () => clearInterval(interval);
-  }, []);
+    const fetchWeather = (lat: number, lon: number) => {
+      if (!API_KEY) {
+        setError("Weather API key is not configured.");
+        return;
+      }
 
-  if (!mounted) {
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=${locale}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.cod === 200) {
+            setWeather({
+              temp: Math.round(data.main.temp),
+              condition: data.weather[0].description,
+              location: data.name,
+              humidity: data.main.humidity,
+              wind: Math.round(data.wind.speed),
+              icon: getWeatherIcon(data.weather[0].icon),
+            });
+            setError(null);
+          } else {
+            setError(data.message);
+          }
+        })
+        .catch(() => setError("Failed to fetch weather data."));
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        () => {
+          // Fallback to IP-based location if geolocation is denied
+          fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => fetchWeather(data.latitude, data.longitude))
+            .catch(() => setError("Unable to retrieve location."));
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by your browser.");
+    }
+  }, [locale]);
+
+  if (!mounted || (!weather && !error)) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('weather.loading', locale)}</div>
+      <WidgetContainer theme={theme}>
+        <div style={{ textAlign: 'center', opacity: 0.5 }}>{t('weather.loading', locale)}</div>
       </WidgetContainer>
     );
   }
 
+  if (error) {
+    return (
+      <WidgetContainer theme={theme}>
+        <div style={{ textAlign: 'center', color: theme.colors.accent, padding: '20px' }}>
+          <p>⚠️ {t('weather.error', locale)}</p>
+          <p style={{ fontSize: '12px', opacity: 0.7, marginTop: '8px' }}>{error}</p>
+        </div>
+      </WidgetContainer>
+    );
+  }
+
+  if (!weather) return null;
+
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme}>
       <div style={{
         width: '100%',
         height: '100%',
@@ -66,7 +121,6 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
         padding: '24px',
         position: 'relative',
       }}>
-        {/* Background gradient based on weather */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -79,7 +133,6 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
           pointerEvents: 'none',
         }} />
 
-        {/* Location */}
         <div className="text-sm" style={{
           color: theme.colors.secondary,
           opacity: 0.7,
@@ -91,7 +144,6 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
           {weather.location}
         </div>
 
-        {/* Weather icon and temperature */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -116,13 +168,13 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
             <div className="text-base" style={{
               color: theme.colors.secondary,
               marginTop: '4px',
+              textTransform: 'capitalize',
             }}>
               {weather.condition}
             </div>
           </div>
         </div>
 
-        {/* Additional weather info */}
         <div style={{
           display: 'flex',
           gap: '24px',
@@ -134,54 +186,30 @@ export function Weather({ theme, locale = 'en' }: WeatherProps) {
             alignItems: 'center',
             gap: '4px',
           }}>
-            <div style={{
-              fontSize: '1.25rem',
-              opacity: 0.7,
-            }}>
-              💧
-            </div>
-            <div className="text-sm" style={{
-              color: theme.colors.secondary,
-              opacity: 0.8,
-            }}>
+            <div style={{ fontSize: '1.25rem', opacity: 0.7 }}>💧</div>
+            <div className="text-sm" style={{ color: theme.colors.secondary, opacity: 0.8 }}>
               {weather.humidity}%
             </div>
-            <div className="text-xs" style={{
-              color: theme.colors.muted,
-              opacity: 0.6,
-            }}>
+            <div className="text-xs" style={{ color: theme.colors.muted, opacity: 0.6 }}>
               {t('weather.humidity', locale)}
             </div>
           </div>
-
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '4px',
           }}>
-            <div style={{
-              fontSize: '1.25rem',
-              opacity: 0.7,
-            }}>
-              💨
+            <div style={{ fontSize: '1.25rem', opacity: 0.7 }}>💨</div>
+            <div className="text-sm" style={{ color: theme.colors.secondary, opacity: 0.8 }}>
+              {weather.wind} m/s
             </div>
-            <div className="text-sm" style={{
-              color: theme.colors.secondary,
-              opacity: 0.8,
-            }}>
-              {weather.wind} km/h
-            </div>
-            <div className="text-xs" style={{
-              color: theme.colors.muted,
-              opacity: 0.6,
-            }}>
+            <div className="text-xs" style={{ color: theme.colors.muted, opacity: 0.6 }}>
               {t('weather.wind', locale)}
             </div>
           </div>
         </div>
 
-        {/* Update time */}
         <div className="text-xs" style={{
           position: 'absolute',
           bottom: '16px',

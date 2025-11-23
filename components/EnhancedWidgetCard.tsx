@@ -98,7 +98,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
       {/* Widget Preview with loading state */}
       <div style={{
         position: 'relative',
-        height: '240px',
+        minHeight: '240px',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         display: 'flex',
         alignItems: 'center',
@@ -126,12 +126,19 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
         
         {/* Actual widget preview */}
         <div style={{
-          transform: 'scale(0.7)',
+          width: '100%',
+          height: '100%',
+          transform: 'scale(0.9)',
           transformOrigin: 'center',
           opacity: isPreviewLoaded ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
-          <WidgetComponent theme={theme} />
+          <div style={{ width: '100%', height: '100%' }}>
+            <WidgetComponent theme={theme} locale={locale} />
+          </div>
         </div>
         
         {/* Interactive overlay on hover */}

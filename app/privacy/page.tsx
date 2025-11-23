@@ -34,7 +34,7 @@ export default function PrivacyPage() {
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>Third-Party Services</h2>
       <p style={{ marginBottom: '16px' }}>
         We use Google AdSense to display advertisements. Google AdSense may use cookies and web beacons to
-        collect non-personal information. You can read more about Google's privacy practices at{' '}
+        collect non-personal information. You can read more about Google&apos;s privacy practices at{' '}
         <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
           Google Privacy Policy
         </a>.
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
       
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>Data Storage</h2>
       <p style={{ marginBottom: '16px' }}>
-        All widget data (such as countdown targets or weather locations) is stored locally in your browser's
+        All widget data (such as countdown targets or weather locations) is stored locally in your browser&apos;s
         localStorage and is never transmitted to any server.
       </p>
       

@@ -48,7 +48,7 @@ export function SimpleWidgetCard({ widget, theme, baseUrl }: SimpleWidgetCardPro
       {/* Widget Preview */}
       <div style={{
         position: 'relative',
-        height: '200px',
+        minHeight: '200px',
         backgroundColor: '#f9fafb',
         display: 'flex',
         alignItems: 'center',

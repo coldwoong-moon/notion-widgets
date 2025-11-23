@@ -44,6 +44,7 @@ export type TranslationKey =
   | 'weather.humidity'
   | 'weather.wind'
   | 'weather.updatedNow'
+  | 'weather.error'
   | 'weather.sunny'
   | 'weather.partlyCloudy'
   | 'weather.cloudy'
@@ -114,6 +115,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': 'Humidity',
     'weather.wind': 'Wind',
     'weather.updatedNow': 'Updated just now',
+    'weather.error': 'Error loading weather',
     'weather.sunny': 'Sunny',
     'weather.partlyCloudy': 'Partly Cloudy',
     'weather.cloudy': 'Cloudy',
@@ -183,6 +185,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': '습도',
     'weather.wind': '바람',
     'weather.updatedNow': '방금 업데이트됨',
+    'weather.error': '날씨 정보를 불러오는 중 오류 발생',
     'weather.sunny': '맑음',
     'weather.partlyCloudy': '구름 조금',
     'weather.cloudy': '흐림',
@@ -252,6 +255,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': '湿度',
     'weather.wind': '風',
     'weather.updatedNow': '今更新されました',
+    'weather.error': '天気情報の読み込み中にエラーが発生しました',
     'weather.sunny': '晴れ',
     'weather.partlyCloudy': '晴れ時々曇り',
     'weather.cloudy': '曇り',
@@ -321,6 +325,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': '湿度',
     'weather.wind': '风速',
     'weather.updatedNow': '刚刚更新',
+    'weather.error': '加载天气信息时出错',
     'weather.sunny': '晴朗',
     'weather.partlyCloudy': '局部多云',
     'weather.cloudy': '多云',
@@ -390,6 +395,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': 'Humedad',
     'weather.wind': 'Viento',
     'weather.updatedNow': 'Actualizado ahora',
+    'weather.error': 'Error al cargar el clima',
     'weather.sunny': 'Soleado',
     'weather.partlyCloudy': 'Parcialmente nublado',
     'weather.cloudy': 'Nublado',
@@ -459,6 +465,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': 'Humidité',
     'weather.wind': 'Vent',
     'weather.updatedNow': 'Mis à jour maintenant',
+    'weather.error': 'Erreur lors du chargement de la météo',
     'weather.sunny': 'Ensoleillé',
     'weather.partlyCloudy': 'Partiellement nuageux',
     'weather.cloudy': 'Nuageux',
@@ -528,6 +535,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.humidity': 'Luftfeuchtigkeit',
     'weather.wind': 'Wind',
     'weather.updatedNow': 'Gerade aktualisiert',
+    'weather.error': 'Fehler beim Laden des Wetters',
     'weather.sunny': 'Sonnig',
     'weather.partlyCloudy': 'Teilweise bewölkt',
     'weather.cloudy': 'Bewölkt',

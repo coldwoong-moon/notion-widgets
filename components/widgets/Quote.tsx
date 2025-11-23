@@ -11,7 +11,7 @@ interface QuoteProps {
   locale?: Locale;
 }
 
-const quotes = [
+const quotesEn = [
   { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
   { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
   { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
@@ -22,8 +22,26 @@ const quotes = [
   { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
 ];
 
+const quotesKo = [
+  { text: "위대한 일을 하는 유일한 방법은 당신이 하는 일을 사랑하는 것입니다.", author: "스티브 잡스", original: "The only way to do great work is to love what you do." },
+  { text: "혁신은 리더와 추종자를 구분합니다.", author: "스티브 잡스", original: "Innovation distinguishes between a leader and a follower." },
+  { text: "항상 갈망하고, 항상 우직하게 나아가라.", author: "스티브 잡스", original: "Stay hungry, stay foolish." },
+  { text: "미래는 자신의 꿈의 아름다움을 믿는 사람들의 것입니다.", author: "엘리너 루스벨트", original: "The future belongs to those who believe in the beauty of their dreams." },
+  { text: "가장 어두운 순간에 우리는 빛을 보기 위해 집중해야 합니다.", author: "아리스토텔레스", original: "It is during our darkest moments that we must focus to see the light." },
+  { text: "성공은 최종적인 것이 아니며, 실패는 치명적이지 않습니다. 중요한 것은 계속할 수 있는 용기입니다.", author: "윈스턴 처칠", original: "Success is not final, failure is not fatal: it is the courage to continue that counts." },
+  { text: "나무를 심기에 가장 좋은 때는 20년 전이었습니다. 두 번째로 좋은 때는 바로 지금입니다.", author: "중국 속담", original: "The best time to plant a tree was 20 years ago. The second best time is now." },
+  { text: "당신의 시간은 제한되어 있으니, 다른 사람의 삶을 사느라 낭비하지 마십시오.", author: "스티브 잡스", original: "Your time is limited, don't waste it living someone else's life." },
+];
+
+interface QuoteType {
+  text: string;
+  author: string;
+  original?: string;
+}
+
 export function Quote({ theme, locale = 'en' }: QuoteProps) {
-  const [currentQuote, setCurrentQuote] = useState(quotes[0]);
+  const quotes: QuoteType[] = locale === 'ko' ? quotesKo : quotesEn;
+  const [currentQuote, setCurrentQuote] = useState<QuoteType>(quotes[0]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -38,18 +56,18 @@ export function Quote({ theme, locale = 'en' }: QuoteProps) {
     }, 10000); // Change quote every 10 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [quotes]);
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('quote.loading', locale)}</div>
       </WidgetContainer>
     );
   }
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme}>
       <div style={{
         width: '100%',
         maxWidth: '600px',
@@ -86,13 +104,24 @@ export function Quote({ theme, locale = 'en' }: QuoteProps) {
               fontWeight: '300',
               fontStyle: 'italic',
               lineHeight: 1.6,
-              marginBottom: '20px',
+              marginBottom: '12px',
               fontFamily: 'Georgia, "Times New Roman", serif',
               letterSpacing: '0.02em',
             }}
           >
             &ldquo;{currentQuote.text}&rdquo;
           </blockquote>
+
+          {locale === 'ko' && 'original' in currentQuote && (
+            <p className="text-xs" style={{
+              color: theme.colors.secondary,
+              opacity: 0.6,
+              fontStyle: 'italic',
+              marginBottom: '20px'
+            }}>
+              {currentQuote.original}
+            </p>
+          )}
           
           <cite
             className="text-sm"

@@ -51,7 +51,10 @@ export function WidgetCard({ widget, theme, baseUrl, onCustomize }: WidgetCardPr
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Widget Preview - 실제 위젯이 잘 보이도록 */}
-      <div className="relative h-52 bg-white dark:bg-slate-950 overflow-hidden border-b">
+      <div
+        className="relative bg-white dark:bg-slate-950 overflow-hidden border-b"
+        style={{ minHeight: '208px' }}
+      >
         {/* Animated gradient background on hover */}
         <div 
           className={`absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 transition-opacity duration-300 ${

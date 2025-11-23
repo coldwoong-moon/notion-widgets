@@ -21,7 +21,7 @@ export function Calendar({ theme, locale = 'en' }: CalendarProps) {
 
   if (!mounted) {
     return (
-      <WidgetContainer theme={theme} minHeight={280}>
+      <WidgetContainer theme={theme}>
         <div style={{ textAlign: 'center', opacity: 0.1 }}>Loading...</div>
       </WidgetContainer>
     );
@@ -63,7 +63,7 @@ export function Calendar({ theme, locale = 'en' }: CalendarProps) {
   }
 
   return (
-    <WidgetContainer theme={theme} minHeight={280}>
+    <WidgetContainer theme={theme}>
       <div style={{
         width: '100%',
         maxWidth: '400px',
