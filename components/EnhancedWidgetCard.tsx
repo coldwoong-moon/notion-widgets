@@ -100,7 +100,9 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
         position: 'relative',
         height: 'auto',
         aspectRatio: `${widget.notion.width} / ${widget.notion.height}`,
-        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        background: theme.id === 'dark'
+          ? 'linear-gradient(135deg, #2d3748 0%, #1a202c 100%)'
+          : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

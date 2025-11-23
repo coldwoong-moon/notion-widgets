@@ -15,6 +15,7 @@ export type TranslationKey =
   | 'widget.yearProgress'
   | 'widget.quote'
   | 'widget.countdown'
+  | 'widget.pomodoro'
   // Clock widget
   | 'clock.loading'
   // Calendar widget
@@ -49,6 +50,8 @@ export type TranslationKey =
   | 'weather.cloudy'
   | 'weather.rainy'
   | 'weather.thunderstorm'
+  | 'weather.fog'
+  | 'weather.snow'
   // Year Progress
   | 'yearProgress.loading'
   | 'yearProgress.title'
@@ -67,7 +70,11 @@ export type TranslationKey =
   | 'countdown.hours'
   | 'countdown.minutes'
   | 'countdown.seconds'
-  | 'countdown.newYear';
+  | 'countdown.newYear'
+  // Pomodoro widget
+  | 'pomodoro.work'
+  | 'pomodoro.shortBreak'
+  | 'pomodoro.longBreak';
 
 export const translations: Record<Locale, Record<TranslationKey, string>> = {
   en: {
@@ -85,6 +92,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': 'Year Progress',
     'widget.quote': 'Daily Quote',
     'widget.countdown': 'Countdown',
+    'widget.pomodoro': 'Pomodoro',
     // Clock
     'clock.loading': 'Loading...',
     // Calendar
@@ -119,6 +127,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': 'Cloudy',
     'weather.rainy': 'Rainy',
     'weather.thunderstorm': 'Thunderstorm',
+    'weather.fog': 'Fog',
+    'weather.snow': 'Snow',
     // Year Progress
     'yearProgress.loading': 'Loading...',
     'yearProgress.title': 'Year Progress',
@@ -138,6 +148,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': 'Mins',
     'countdown.seconds': 'Secs',
     'countdown.newYear': 'New Year 2025',
+    // Pomodoro
+    'pomodoro.work': 'Work',
+    'pomodoro.shortBreak': 'Short Break',
+    'pomodoro.longBreak': 'Long Break',
   },
   ko: {
     // Gallery
@@ -154,6 +168,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': '연간 진행률',
     'widget.quote': '오늘의 명언',
     'widget.countdown': '카운트다운',
+    'widget.pomodoro': '뽀모도로',
     // Clock
     'clock.loading': '로딩 중...',
     // Calendar
@@ -188,6 +203,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': '흐림',
     'weather.rainy': '비',
     'weather.thunderstorm': '뇌우',
+    'weather.fog': '안개',
+    'weather.snow': '눈',
     // Year Progress
     'yearProgress.loading': '로딩 중...',
     'yearProgress.title': '연간 진행률',
@@ -207,6 +224,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': '분',
     'countdown.seconds': '초',
     'countdown.newYear': '2025년 새해',
+    // Pomodoro
+    'pomodoro.work': '집중',
+    'pomodoro.shortBreak': '짧은 휴식',
+    'pomodoro.longBreak': '긴 휴식',
   },
   ja: {
     // Gallery
@@ -223,6 +244,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': '年間進捗',
     'widget.quote': '今日の名言',
     'widget.countdown': 'カウントダウン',
+    'widget.pomodoro': 'ポモドーロ',
     // Clock
     'clock.loading': '読み込み中...',
     // Calendar
@@ -257,6 +279,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': '曇り',
     'weather.rainy': '雨',
     'weather.thunderstorm': '雷雨',
+    'weather.fog': '霧',
+    'weather.snow': '雪',
     // Year Progress
     'yearProgress.loading': '読み込み中...',
     'yearProgress.title': '年間進捗',
@@ -276,6 +300,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': '分',
     'countdown.seconds': '秒',
     'countdown.newYear': '2025年新年',
+    // Pomodoro
+    'pomodoro.work': '集中',
+    'pomodoro.shortBreak': '短い休憩',
+    'pomodoro.longBreak': '長い休憩',
   },
   zh: {
     // Gallery
@@ -292,6 +320,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': '年度进度',
     'widget.quote': '每日名言',
     'widget.countdown': '倒计时',
+    'widget.pomodoro': '番茄钟',
     // Clock
     'clock.loading': '加载中...',
     // Calendar
@@ -326,6 +355,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': '多云',
     'weather.rainy': '雨天',
     'weather.thunderstorm': '雷暴',
+    'weather.fog': '雾',
+    'weather.snow': '雪',
     // Year Progress
     'yearProgress.loading': '加载中...',
     'yearProgress.title': '年度进度',
@@ -345,6 +376,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': '分钟',
     'countdown.seconds': '秒',
     'countdown.newYear': '2025年新年',
+    // Pomodoro
+    'pomodoro.work': '工作',
+    'pomodoro.shortBreak': '短休息',
+    'pomodoro.longBreak': '长休息',
   },
   es: {
     // Gallery
@@ -361,6 +396,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': 'Progreso del año',
     'widget.quote': 'Cita del día',
     'widget.countdown': 'Cuenta regresiva',
+    'widget.pomodoro': 'Pomodoro',
     // Clock
     'clock.loading': 'Cargando...',
     // Calendar
@@ -395,6 +431,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': 'Nublado',
     'weather.rainy': 'Lluvioso',
     'weather.thunderstorm': 'Tormenta',
+    'weather.fog': 'Niebla',
+    'weather.snow': 'Nieve',
     // Year Progress
     'yearProgress.loading': 'Cargando...',
     'yearProgress.title': 'Progreso del año',
@@ -414,6 +452,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': 'Min',
     'countdown.seconds': 'Seg',
     'countdown.newYear': 'Año Nuevo 2025',
+    // Pomodoro
+    'pomodoro.work': 'Trabajo',
+    'pomodoro.shortBreak': 'Descanso Corto',
+    'pomodoro.longBreak': 'Descanso Largo',
   },
   fr: {
     // Gallery
@@ -430,6 +472,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': 'Progression de l\'année',
     'widget.quote': 'Citation du jour',
     'widget.countdown': 'Compte à rebours',
+    'widget.pomodoro': 'Pomodoro',
     // Clock
     'clock.loading': 'Chargement...',
     // Calendar
@@ -464,6 +507,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': 'Nuageux',
     'weather.rainy': 'Pluvieux',
     'weather.thunderstorm': 'Orage',
+    'weather.fog': 'Brouillard',
+    'weather.snow': 'Neige',
     // Year Progress
     'yearProgress.loading': 'Chargement...',
     'yearProgress.title': 'Progression de l\'année',
@@ -483,6 +528,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': 'Min',
     'countdown.seconds': 'Sec',
     'countdown.newYear': 'Nouvel An 2025',
+    // Pomodoro
+    'pomodoro.work': 'Travail',
+    'pomodoro.shortBreak': 'Pause courte',
+    'pomodoro.longBreak': 'Pause longue',
   },
   de: {
     // Gallery
@@ -499,6 +548,7 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'widget.yearProgress': 'Jahresfortschritt',
     'widget.quote': 'Zitat des Tages',
     'widget.countdown': 'Countdown',
+    'widget.pomodoro': 'Pomodoro',
     // Clock
     'clock.loading': 'Wird geladen...',
     // Calendar
@@ -533,6 +583,8 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'weather.cloudy': 'Bewölkt',
     'weather.rainy': 'Regnerisch',
     'weather.thunderstorm': 'Gewitter',
+    'weather.fog': 'Nebel',
+    'weather.snow': 'Schnee',
     // Year Progress
     'yearProgress.loading': 'Wird geladen...',
     'yearProgress.title': 'Jahresfortschritt',
@@ -552,6 +604,10 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'countdown.minutes': 'Min',
     'countdown.seconds': 'Sek',
     'countdown.newYear': 'Neujahr 2025',
+    // Pomodoro
+    'pomodoro.work': 'Arbeit',
+    'pomodoro.shortBreak': 'Kurze Pause',
+    'pomodoro.longBreak': 'Lange Pause',
   },
 };
 
