@@ -35,7 +35,7 @@ export interface Widget {
   name: string;
   description: string;
   category: string;
-  icon: string; // emoji or icon
+  icon: React.ReactNode; // ReactNode for Lucide icons
   defaultSize: {
     width: number;
     height: number;
