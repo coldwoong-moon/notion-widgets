@@ -15,44 +15,143 @@ interface WeatherProps {
   };
 }
 
+// WMO Weather interpretation codes (WW)
+// https://open-meteo.com/en/docs
+const getWeatherIcon = (code: number) => {
+  if (code === 0) return '☀️'; // Clear sky
+  if (code === 1 || code === 2 || code === 3) return '⛅'; // Mainly clear, partly cloudy, and overcast
+  if (code === 45 || code === 48) return '🌫️'; // Fog
+  if (code >= 51 && code <= 55) return '🌧️'; // Drizzle
+  if (code >= 61 && code <= 65) return '🌧️'; // Rain
+  if (code >= 71 && code <= 77) return '❄️'; // Snow
+  if (code >= 80 && code <= 82) return '🌧️'; // Rain showers
+  if (code >= 85 && code <= 86) return '❄️'; // Snow showers
+  if (code >= 95 && code <= 99) return '⛈️'; // Thunderstorm
+  return '❓';
+};
+
+const getWeatherCondition = (code: number, locale: Locale) => {
+  // Simplified mapping, ideally should be translated
+  const conditions: Record<number, string> = {
+    0: t('weather.sunny', locale),
+    1: t('weather.partlyCloudy', locale),
+    2: t('weather.partlyCloudy', locale),
+    3: t('weather.cloudy', locale),
+    45: t('weather.fog', locale),
+    48: t('weather.fog', locale),
+    51: t('weather.rainy', locale),
+    53: t('weather.rainy', locale),
+    55: t('weather.rainy', locale),
+    61: t('weather.rainy', locale),
+    63: t('weather.rainy', locale),
+    65: t('weather.rainy', locale),
+    71: t('weather.snow', locale),
+    73: t('weather.snow', locale),
+    75: t('weather.snow', locale),
+    77: t('weather.snow', locale),
+    80: t('weather.rainy', locale),
+    81: t('weather.rainy', locale),
+    82: t('weather.rainy', locale),
+    85: t('weather.snow', locale),
+    86: t('weather.snow', locale),
+    95: t('weather.thunderstorm', locale),
+    96: t('weather.thunderstorm', locale),
+    99: t('weather.thunderstorm', locale),
+  };
+  return conditions[code] || t('weather.partlyCloudy', locale);
+};
+
 export function Weather({ theme, locale = 'en', notion }: WeatherProps) {
   const [weather, setWeather] = useState({
-    temp: 22,
-    condition: 'Partly Cloudy',
-    location: 'San Francisco',
-    humidity: 65,
-    wind: 12,
-    icon: '⛅',
+    temp: 0,
+    condition: '',
+    location: 'Loading...',
+    humidity: 0,
+    wind: 0,
+    icon: '',
   });
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    // Simulate weather variations
-    const interval = setInterval(() => {
-      const conditions = [
-        { condition: 'Sunny', icon: '☀️', temp: 25 },
-        { condition: 'Partly Cloudy', icon: '⛅', temp: 22 },
-        { condition: 'Cloudy', icon: '☁️', temp: 18 },
-        { condition: 'Rainy', icon: '🌧️', temp: 16 },
-        { condition: 'Thunderstorm', icon: '⛈️', temp: 15 },
-      ];
-      const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-      setWeather(prev => ({
-        ...prev,
-        ...randomCondition,
-        humidity: 50 + Math.floor(Math.random() * 40),
-        wind: 5 + Math.floor(Math.random() * 20),
-      }));
-    }, 30000); // Update every 30 seconds
+    const fetchWeather = async (lat: number, lon: number, locationName: string) => {
+      try {
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`
+        );
+        const data = await response.json();
+        const current = data.current;
 
+        setWeather({
+          temp: Math.round(current.temperature_2m),
+          condition: getWeatherCondition(current.weather_code, locale),
+          location: locationName,
+          humidity: current.relative_humidity_2m,
+          wind: Math.round(current.wind_speed_10m),
+          icon: getWeatherIcon(current.weather_code),
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch weather:', err);
+        setError('Failed to load weather');
+        setLoading(false);
+      }
+    };
+
+    const getLocationAndFetchWeather = () => {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            // Reverse geocoding to get city name (using a free API or just coordinates)
+            // For simplicity/privacy/no-api-key, we might just show coordinates or "My Location"
+            // Or use a free reverse geocoding service if available.
+            // For now, let's try to use a public IP-based location service as a fallback or primary if geo is denied,
+            // but since this is client-side, we can use `nominatim.openstreetmap.org` for reverse geocoding (respecting usage policy).
+
+            const { latitude, longitude } = position.coords;
+
+            try {
+              const geoResponse = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
+              );
+              const geoData = await geoResponse.json();
+              const city = geoData.address.city || geoData.address.town || geoData.address.village || 'My Location';
+              fetchWeather(latitude, longitude, city);
+            } catch {
+              fetchWeather(latitude, longitude, 'My Location');
+            }
+          },
+          () => {
+            // Fallback to a default location (e.g., London or New York) if permission denied
+             // London
+            fetchWeather(51.5074, -0.1278, 'London');
+          }
+        );
+      } else {
+        // Fallback for browsers without geolocation
+        fetchWeather(51.5074, -0.1278, 'London');
+      }
+    };
+
+    getLocationAndFetchWeather();
+
+    // Refresh every 30 minutes
+    const interval = setInterval(getLocationAndFetchWeather, 30 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [locale]);
 
-  if (!mounted) {
+  if (loading) {
     return (
       <WidgetContainer theme={theme} notion={notion}>
-        <div style={{ textAlign: 'center', opacity: 0.1 }}>{t('weather.loading', locale)}</div>
+        <div style={{ textAlign: 'center', opacity: 0.5 }}>{t('weather.loading', locale)}</div>
+      </WidgetContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <WidgetContainer theme={theme} notion={notion}>
+        <div style={{ textAlign: 'center', color: 'red' }}>{error}</div>
       </WidgetContainer>
     );
   }
@@ -75,9 +174,9 @@ export function Weather({ theme, locale = 'en', notion }: WeatherProps) {
           position: 'absolute',
           inset: 0,
           opacity: 0.1,
-          background: weather.condition.includes('Sunny') 
+          background: weather.icon === '☀️'
             ? 'radial-gradient(circle at top, #FDB813 0%, transparent 70%)'
-            : weather.condition.includes('Rain') || weather.condition.includes('Thunder')
+            : weather.icon === '🌧️' || weather.icon === '⛈️'
               ? 'radial-gradient(circle at top, #4A90E2 0%, transparent 70%)'
               : 'radial-gradient(circle at top, #B8C6DB 0%, transparent 70%)',
           pointerEvents: 'none',
@@ -187,8 +286,7 @@ export function Weather({ theme, locale = 'en', notion }: WeatherProps) {
 
         {/* Update time */}
         <div className="text-xs" style={{
-          position: 'absolute',
-          bottom: '16px',
+          marginTop: '24px',
           color: theme.colors.muted,
           opacity: 0.4,
         }}>

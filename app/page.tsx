@@ -1,27 +1,45 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { EnhancedWidgetCard } from '@/components/EnhancedWidgetCard';
 import { widgets } from '@/lib/widgets';
-import { useSystemTheme } from '@/hooks/useSystemTheme';
+import { useSystemTheme, lightTheme, darkTheme } from '@/hooks/useSystemTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Locale, locales, localeNames } from '@/lib/i18n';
 import { AdBanner } from '@/components/GoogleAdsense';
+
+type ThemeMode = 'system' | 'light' | 'dark';
 
 export default function Home() {
   const systemTheme = useSystemTheme();
   const { t, locale } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState<Locale>(locale);
+  const [themeMode, setThemeMode] = useState<ThemeMode>('system');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine current effective theme
+  const currentTheme = useMemo(() => {
+    if (themeMode === 'system') return systemTheme;
+    return themeMode === 'dark' ? darkTheme : lightTheme;
+  }, [themeMode, systemTheme]);
   
   // Get unique categories
   const categories = ['all', ...new Set(widgets.map(w => w.category))];
   
-  // Filter widgets by category
-  const filteredWidgets = selectedCategory === 'all' 
-    ? widgets 
-    : widgets.filter(w => w.category === selectedCategory);
+  // Filter widgets by category and search
+  const filteredWidgets = widgets.filter(w => {
+    const matchesCategory = selectedCategory === 'all' || w.category === selectedCategory;
+    const matchesSearch = w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         w.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
   
   // Get the proper base URL for widget embeds
   const baseUrl = typeof window !== 'undefined' 
@@ -80,15 +98,14 @@ export default function Home() {
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #888;
+        background: #cbd5e1;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #555;
+        background: #94a3b8;
       }
     `;
     document.head.appendChild(style);
@@ -99,12 +116,14 @@ export default function Home() {
     };
   }, []);
 
+  if (!mounted) return null;
+
   return (
     <div style={{ 
       minHeight: '100vh', 
-      backgroundColor: systemTheme.colors.background,
-      color: systemTheme.colors.foreground,
-      fontFamily: systemTheme.typography.fontFamily,
+      backgroundColor: currentTheme.colors.background,
+      color: currentTheme.colors.foreground,
+      fontFamily: currentTheme.typography.fontFamily,
       transition: 'background-color 0.3s ease, color 0.3s ease',
     }}>
       {/* Header */}
@@ -112,11 +131,11 @@ export default function Home() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: systemTheme.id === 'dark' 
+        backgroundColor: currentTheme.id === 'dark'
           ? 'rgba(0, 0, 0, 0.8)' 
           : 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(12px)',
-        borderBottom: `1px solid ${systemTheme.colors.border}`,
+        borderBottom: `1px solid ${currentTheme.colors.border}`,
         transition: 'all 0.3s ease',
       }}>
         <div style={{
@@ -154,7 +173,7 @@ export default function Home() {
                 <h1 style={{
                   fontSize: isMobile ? '20px' : '24px',
                   fontWeight: '800',
-                  color: systemTheme.colors.foreground,
+                  color: currentTheme.colors.foreground,
                   margin: 0,
                   letterSpacing: '-0.025em',
                 }}>
@@ -163,7 +182,7 @@ export default function Home() {
                 {!isMobile && (
                   <p style={{
                     fontSize: '14px',
-                    color: systemTheme.colors.secondary,
+                    color: currentTheme.colors.secondary,
                     margin: 0,
                   }}>
                     {t('gallery.subtitle')}
@@ -172,21 +191,40 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Language Switcher */}
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '12px' 
-            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* Theme Toggle */}
+              <button
+                onClick={() => setThemeMode(prev => {
+                  if (prev === 'system') return 'light';
+                  if (prev === 'light') return 'dark';
+                  return 'system';
+                })}
+                style={{
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: `1px solid ${currentTheme.colors.border}`,
+                  backgroundColor: currentTheme.colors.background,
+                  color: currentTheme.colors.foreground,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                title={`Theme: ${themeMode}`}
+              >
+                {themeMode === 'system' ? '💻' : themeMode === 'light' ? '☀️' : '🌙'}
+              </button>
+
+              {/* Language Switcher */}
               <select
                 value={selectedLocale}
                 onChange={(e) => handleLanguageChange(e.target.value as Locale)}
                 style={{
                   padding: '8px 12px',
                   borderRadius: '8px',
-                  border: `1px solid ${systemTheme.colors.border}`,
-                  backgroundColor: systemTheme.colors.background,
-                  color: systemTheme.colors.foreground,
+                  border: `1px solid ${currentTheme.colors.border}`,
+                  backgroundColor: currentTheme.colors.background,
+                  color: currentTheme.colors.foreground,
                   fontSize: '14px',
                   fontWeight: '500',
                   cursor: 'pointer',
@@ -204,22 +242,28 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Category Filter */}
+      {/* Category Filter and Search */}
       <nav style={{
         position: 'sticky',
         top: isMobile ? '60px' : '72px',
         zIndex: 90,
-        backgroundColor: systemTheme.id === 'dark'
+        backgroundColor: currentTheme.id === 'dark'
           ? 'rgba(0, 0, 0, 0.8)' 
           : 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(12px)',
-        borderBottom: `1px solid ${systemTheme.colors.border}`,
+        borderBottom: `1px solid ${currentTheme.colors.border}`,
       }}>
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
           padding: isMobile ? '12px 16px' : '16px 32px',
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: '16px',
+          alignItems: isMobile ? 'stretch' : 'center',
+          justifyContent: 'space-between',
         }}>
+          {/* Categories */}
           <div style={{
             display: 'flex',
             gap: '8px',
@@ -238,14 +282,14 @@ export default function Home() {
                   fontSize: '14px',
                   fontWeight: '600',
                   backgroundColor: selectedCategory === category 
-                    ? systemTheme.colors.primary 
+                    ? currentTheme.colors.primary
                     : 'transparent',
                   color: selectedCategory === category 
-                    ? systemTheme.colors.background 
-                    : systemTheme.colors.secondary,
+                    ? currentTheme.colors.background
+                    : currentTheme.colors.secondary,
                   border: selectedCategory === category
                     ? 'none'
-                    : `1px solid ${systemTheme.colors.border}`,
+                    : `1px solid ${currentTheme.colors.border}`,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   transition: 'all 0.2s ease',
@@ -255,35 +299,52 @@ export default function Home() {
                   opacity: 0,
                   animation: `fadeIn 0.3s ease-out ${index * 0.05}s forwards`,
                 }}
-                onMouseOver={(e) => {
-                  if (selectedCategory !== category) {
-                    e.currentTarget.style.backgroundColor = '#f1f5f9';
-                    e.currentTarget.style.color = '#0f172a';
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (selectedCategory !== category) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#64748b';
-                  }
-                }}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
-                <span style={{
-                  fontSize: '12px',
-                  opacity: 0.7,
-                  backgroundColor: selectedCategory === category 
-                    ? 'rgba(255, 255, 255, 0.2)' 
-                    : 'rgba(0, 0, 0, 0.05)',
-                  padding: '2px 8px',
-                  borderRadius: '999px',
-                }}>
-                  {category === 'all' 
-                    ? widgets.length 
-                    : widgets.filter(w => w.category === category).length}
-                </span>
               </button>
             ))}
+          </div>
+
+          {/* Search Bar */}
+          <div style={{
+            position: 'relative',
+            minWidth: isMobile ? '100%' : '300px',
+          }}>
+            <div style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: currentTheme.colors.secondary,
+              pointerEvents: 'none',
+            }}>
+              🔍
+            </div>
+            <input
+              type="text"
+              placeholder="Search widgets..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 16px 10px 40px',
+                borderRadius: '999px',
+                border: `1px solid ${currentTheme.colors.border}`,
+                backgroundColor: currentTheme.colors.background,
+                color: currentTheme.colors.foreground,
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = currentTheme.colors.primary;
+                e.target.style.boxShadow = `0 0 0 2px ${currentTheme.colors.primary}20`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = currentTheme.colors.border;
+                e.target.style.boxShadow = 'none';
+              }}
+            />
           </div>
         </div>
       </nav>
@@ -304,7 +365,7 @@ export default function Home() {
           <h2 style={{
             fontSize: isMobile ? '28px' : '36px',
             fontWeight: '800',
-            color: systemTheme.colors.foreground,
+            color: currentTheme.colors.foreground,
             marginBottom: '16px',
             letterSpacing: '-0.025em',
           }}>
@@ -312,13 +373,32 @@ export default function Home() {
           </h2>
           <p style={{
             fontSize: isMobile ? '16px' : '18px',
-            color: systemTheme.colors.secondary,
+            color: currentTheme.colors.secondary,
             maxWidth: '600px',
             margin: '0 auto',
             lineHeight: '1.6',
+            marginBottom: '32px',
           }}>
             {t('gallery.subtitle')}
           </p>
+
+          {/* Featured Widget Suggestion */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            backgroundColor: `${currentTheme.colors.primary}15`,
+            borderRadius: '999px',
+            border: `1px solid ${currentTheme.colors.primary}30`,
+            fontSize: '14px',
+            color: currentTheme.colors.primary,
+            fontWeight: '500',
+            cursor: 'default',
+          }}>
+            <span role="img" aria-label="sparkles">✨</span>
+            New: Pomodoro & Weather Widgets available now!
+          </div>
         </div>
 
         {/* Widget Gallery Grid */}
@@ -340,7 +420,7 @@ export default function Home() {
               >
                 <EnhancedWidgetCard
                   widget={widget}
-                  theme={systemTheme}
+                  theme={currentTheme}
                   baseUrl={baseUrl}
                   locale={locale}
                 />
@@ -354,8 +434,8 @@ export default function Home() {
                   animation: `fadeIn 0.5s ease-out ${(index + 1) * 0.05}s forwards`,
                 }}>
                   <div style={{
-                    backgroundColor: systemTheme.colors.background,
-                    border: `1px solid ${systemTheme.colors.border}`,
+                    backgroundColor: currentTheme.colors.background,
+                    border: `1px solid ${currentTheme.colors.border}`,
                     borderRadius: '16px',
                     padding: '20px',
                     height: '100%',
@@ -393,16 +473,19 @@ export default function Home() {
             </div>
             <p style={{
               fontSize: '18px',
-              color: '#64748b',
+              color: currentTheme.colors.secondary,
               marginBottom: '24px',
             }}>
-              No widgets found in this category
+              No widgets found for &quot;{searchQuery}&quot;
             </p>
             <button
-              onClick={() => setSelectedCategory('all')}
+              onClick={() => {
+                setSelectedCategory('all');
+                setSearchQuery('');
+              }}
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#0f172a',
+                backgroundColor: currentTheme.colors.primary,
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '8px',
@@ -411,16 +494,8 @@ export default function Home() {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = '#1e293b';
-                e.currentTarget.style.transform = 'scale(1.02)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = '#0f172a';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
             >
-              View All Widgets
+              Clear Filters
             </button>
           </div>
         )}
@@ -431,8 +506,8 @@ export default function Home() {
             marginTop: '64px',
             marginBottom: '32px',
             padding: '20px',
-            backgroundColor: systemTheme.colors.background,
-            border: `1px solid ${systemTheme.colors.border}`,
+            backgroundColor: currentTheme.colors.background,
+            border: `1px solid ${currentTheme.colors.border}`,
             borderRadius: '12px',
             textAlign: 'center',
           }}>
@@ -448,7 +523,7 @@ export default function Home() {
         <section style={{
           marginTop: '96px',
           paddingTop: '64px',
-          borderTop: `1px solid ${systemTheme.colors.border}`,
+          borderTop: `1px solid ${currentTheme.colors.border}`,
           opacity: 0,
           animation: 'fadeIn 0.6s ease-out 0.4s forwards',
         }}>
@@ -457,7 +532,7 @@ export default function Home() {
             fontWeight: '800',
             textAlign: 'center',
             marginBottom: '48px',
-            color: systemTheme.colors.foreground,
+            color: currentTheme.colors.foreground,
             letterSpacing: '-0.025em',
           }}>
             {t('gallery.embedInNotion')}
@@ -495,8 +570,8 @@ export default function Home() {
                   textAlign: 'center',
                   padding: '32px 24px',
                   borderRadius: '16px',
-                  backgroundColor: systemTheme.colors.background,
-                  border: `1px solid ${systemTheme.colors.border}`,
+                  backgroundColor: currentTheme.colors.background,
+                  border: `1px solid ${currentTheme.colors.border}`,
                   transition: 'all 0.3s ease',
                   cursor: 'default',
                   position: 'relative',
@@ -510,7 +585,7 @@ export default function Home() {
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.borderColor = currentTheme.colors.border;
                 }}
               >
                 {/* Step number */}
@@ -520,14 +595,14 @@ export default function Home() {
                   right: '16px',
                   width: '28px',
                   height: '28px',
-                  backgroundColor: '#f1f5f9',
+                  backgroundColor: currentTheme.id === 'dark' ? '#333' : '#f1f5f9',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '14px',
                   fontWeight: '700',
-                  color: '#64748b',
+                  color: currentTheme.colors.secondary,
                 }}>
                   {index + 1}
                 </div>
@@ -544,26 +619,20 @@ export default function Home() {
                   fontSize: '32px',
                   transition: 'transform 0.3s ease',
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-                }}
-                >
+              >
                   {step.icon}
                 </div>
                 <h3 style={{
                   fontSize: '18px',
                   fontWeight: '700',
                   marginBottom: '12px',
-                  color: '#0f172a',
+                  color: currentTheme.colors.foreground,
                 }}>
                   {step.title}
                 </h3>
                 <p style={{
                   fontSize: '15px',
-                  color: '#64748b',
+                  color: currentTheme.colors.secondary,
                   lineHeight: '1.6',
                   margin: 0,
                 }}>
@@ -585,7 +654,7 @@ export default function Home() {
             fontSize: isMobile ? '28px' : '32px',
             fontWeight: '800',
             marginBottom: '48px',
-            color: '#0f172a',
+            color: currentTheme.colors.foreground,
             letterSpacing: '-0.025em',
           }}>
             Why Choose Our Widgets?
@@ -626,19 +695,19 @@ export default function Home() {
                   alignItems: 'flex-start',
                   gap: '16px',
                   padding: '24px',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: currentTheme.colors.background,
                   borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
+                  border: `1px solid ${currentTheme.colors.border}`,
                   textAlign: 'left',
                   transition: 'all 0.2s ease',
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateX(4px)';
-                  e.currentTarget.style.borderColor = '#3b82f6';
+                  e.currentTarget.style.borderColor = currentTheme.colors.primary;
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateX(0)';
-                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.borderColor = currentTheme.colors.border;
                 }}
               >
                 <span style={{ fontSize: '24px' }}>{feature.icon}</span>
@@ -646,14 +715,14 @@ export default function Home() {
                   <h3 style={{
                     fontSize: '16px',
                     fontWeight: '700',
-                    color: '#0f172a',
+                    color: currentTheme.colors.foreground,
                     marginBottom: '4px',
                   }}>
                     {feature.title}
                   </h3>
                   <p style={{
                     fontSize: '14px',
-                    color: '#64748b',
+                    color: currentTheme.colors.secondary,
                     margin: 0,
                     lineHeight: '1.5',
                   }}>
@@ -670,8 +739,8 @@ export default function Home() {
       <footer style={{
         marginTop: '96px',
         padding: isMobile ? '32px 16px' : '48px 32px',
-        borderTop: `1px solid ${systemTheme.colors.border}`,
-        backgroundColor: systemTheme.colors.background,
+        borderTop: `1px solid ${currentTheme.colors.border}`,
+        backgroundColor: currentTheme.colors.background,
       }}>
         <div style={{ 
           maxWidth: '1400px',
@@ -683,7 +752,7 @@ export default function Home() {
           }}>
             <p style={{
               fontSize: '15px',
-              color: systemTheme.colors.secondary,
+              color: currentTheme.colors.secondary,
               marginBottom: '12px',
             }}>
               Made with ❤️ for Notion users everywhere
@@ -700,7 +769,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 style={{
                   fontSize: '14px',
-                  color: '#0f172a',
+                  color: currentTheme.colors.foreground,
                   textDecoration: 'none',
                   fontWeight: '600',
                   display: 'flex',
@@ -709,10 +778,10 @@ export default function Home() {
                   transition: 'color 0.2s ease',
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.color = '#3b82f6';
+                  e.currentTarget.style.color = currentTheme.colors.primary;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.color = '#0f172a';
+                  e.currentTarget.style.color = currentTheme.colors.foreground;
                 }}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -724,16 +793,16 @@ export default function Home() {
                 href="/privacy"
                 style={{
                   fontSize: '14px',
-                  color: systemTheme.colors.foreground,
+                  color: currentTheme.colors.foreground,
                   textDecoration: 'none',
                   fontWeight: '600',
                   transition: 'color 0.2s ease',
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.color = systemTheme.colors.primary;
+                  e.currentTarget.style.color = currentTheme.colors.primary;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.color = systemTheme.colors.foreground;
+                  e.currentTarget.style.color = currentTheme.colors.foreground;
                 }}
               >
                 Privacy Policy
@@ -742,16 +811,16 @@ export default function Home() {
                 href="/terms"
                 style={{
                   fontSize: '14px',
-                  color: systemTheme.colors.foreground,
+                  color: currentTheme.colors.foreground,
                   textDecoration: 'none',
                   fontWeight: '600',
                   transition: 'color 0.2s ease',
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.color = systemTheme.colors.primary;
+                  e.currentTarget.style.color = currentTheme.colors.primary;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.color = systemTheme.colors.foreground;
+                  e.currentTarget.style.color = currentTheme.colors.foreground;
                 }}
               >
                 Terms of Service
@@ -760,7 +829,7 @@ export default function Home() {
           </div>
           <p style={{
             fontSize: '13px',
-            color: systemTheme.colors.muted,
+            color: currentTheme.colors.muted,
             margin: 0,
           }}>
             © 2024 Notion Widgets. Not affiliated with Notion.

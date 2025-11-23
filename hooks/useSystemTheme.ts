@@ -7,7 +7,7 @@ import { SYSTEM_FONT_FAMILY } from '@/lib/constants';
 
 // Notion-aligned color themes
 // Based on Notion's official light and dark mode color schemes
-const lightTheme: Theme = {
+export const lightTheme: Theme = {
   id: 'light',
   name: 'Light',
   colors: {
@@ -31,7 +31,7 @@ const lightTheme: Theme = {
   },
 };
 
-const darkTheme: Theme = {
+export const darkTheme: Theme = {
   id: 'dark',
   name: 'Dark',
   colors: {

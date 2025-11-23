@@ -5,6 +5,7 @@ import { Weather } from '@/components/widgets/Weather';
 import { YearProgress } from '@/components/widgets/YearProgress';
 import { Quote } from '@/components/widgets/Quote';
 import { Countdown } from '@/components/widgets/Countdown';
+import { Pomodoro } from '@/components/widgets/Pomodoro';
 
 // Notion Block Frame Standards:
 // - Notion pages have max-width ~900px for full content
@@ -109,5 +110,21 @@ export const widgets: Widget[] = [
       height: 3,   // Horizontal layout for timer units
     },
     component: Countdown,
+  },
+  {
+    id: 'pomodoro',
+    name: 'Pomodoro Timer',
+    description: 'Focus timer with work and break intervals',
+    category: 'Productivity',
+    icon: '🍅',
+    defaultSize: {
+      width: 400,
+      height: 400,
+    },
+    notion: {
+      width: 4,
+      height: 4,
+    },
+    component: Pomodoro,
   },
 ];
