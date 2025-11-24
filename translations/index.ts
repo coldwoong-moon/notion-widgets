@@ -74,7 +74,13 @@ export type TranslationKey =
   // Pomodoro widget
   | 'pomodoro.work'
   | 'pomodoro.shortBreak'
-  | 'pomodoro.longBreak';
+  | 'pomodoro.longBreak'
+  // Customization Dialog
+  | 'customization.previewWidth'
+  | 'customization.reset'
+  | 'customization.size.small'
+  | 'customization.size.medium'
+  | 'customization.size.large';
 
 export const translations: Record<Locale, Record<TranslationKey, string>> = {
   en: {
@@ -85,6 +91,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': 'Widget URL copied!',
     'gallery.preview': 'Preview',
     'gallery.embedInNotion': 'Embed in Notion',
+    // Customization
+    'customization.previewWidth': 'Preview Width',
+    'customization.reset': 'Reset',
+    'customization.size.small': 'Small (Mobile)',
+    'customization.size.medium': 'Medium (Tablet)',
+    'customization.size.large': 'Large (Desktop)',
     // Widget names
     'widget.clock': 'Clock',
     'widget.calendar': 'Calendar',
@@ -161,6 +173,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': '위젯 URL이 복사되었습니다!',
     'gallery.preview': '미리보기',
     'gallery.embedInNotion': 'Notion에 삽입',
+    // Customization
+    'customization.previewWidth': '미리보기 너비',
+    'customization.reset': '초기화',
+    'customization.size.small': '작게 (모바일)',
+    'customization.size.medium': '중간 (태블릿)',
+    'customization.size.large': '크게 (데스크탑)',
     // Widget names
     'widget.clock': '시계',
     'widget.calendar': '달력',
@@ -237,6 +255,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': 'ウィジェットURLがコピーされました！',
     'gallery.preview': 'プレビュー',
     'gallery.embedInNotion': 'Notionに埋め込む',
+    // Customization
+    'customization.previewWidth': 'プレビュー幅',
+    'customization.reset': 'リセット',
+    'customization.size.small': '小 (モバイル)',
+    'customization.size.medium': '中 (タブレット)',
+    'customization.size.large': '大 (デスクトップ)',
     // Widget names
     'widget.clock': '時計',
     'widget.calendar': 'カレンダー',
@@ -313,6 +337,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': '小部件URL已复制！',
     'gallery.preview': '预览',
     'gallery.embedInNotion': '嵌入到Notion',
+    // Customization
+    'customization.previewWidth': '预览宽度',
+    'customization.reset': '重置',
+    'customization.size.small': '小 (手机)',
+    'customization.size.medium': '中 (平板)',
+    'customization.size.large': '大 (桌面)',
     // Widget names
     'widget.clock': '时钟',
     'widget.calendar': '日历',
@@ -389,6 +419,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': '¡URL del widget copiada!',
     'gallery.preview': 'Vista previa',
     'gallery.embedInNotion': 'Insertar en Notion',
+    // Customization
+    'customization.previewWidth': 'Ancho de vista previa',
+    'customization.reset': 'Reiniciar',
+    'customization.size.small': 'Pequeño (Móvil)',
+    'customization.size.medium': 'Medio (Tableta)',
+    'customization.size.large': 'Grande (Escritorio)',
     // Widget names
     'widget.clock': 'Reloj',
     'widget.calendar': 'Calendario',
@@ -465,6 +501,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': 'URL du widget copiée !',
     'gallery.preview': 'Aperçu',
     'gallery.embedInNotion': 'Intégrer dans Notion',
+    // Customization
+    'customization.previewWidth': 'Largeur de l\'aperçu',
+    'customization.reset': 'Réinitialiser',
+    'customization.size.small': 'Petit (Mobile)',
+    'customization.size.medium': 'Moyen (Tablette)',
+    'customization.size.large': 'Grand (Bureau)',
     // Widget names
     'widget.clock': 'Horloge',
     'widget.calendar': 'Calendrier',
@@ -541,6 +583,12 @@ export const translations: Record<Locale, Record<TranslationKey, string>> = {
     'gallery.urlCopied': 'Widget-URL kopiert!',
     'gallery.preview': 'Vorschau',
     'gallery.embedInNotion': 'In Notion einbetten',
+    // Customization
+    'customization.previewWidth': 'Vorschau Breite',
+    'customization.reset': 'Zurücksetzen',
+    'customization.size.small': 'Klein (Mobil)',
+    'customization.size.medium': 'Mittel (Tablet)',
+    'customization.size.large': 'Groß (Desktop)',
     // Widget names
     'widget.clock': 'Uhr',
     'widget.calendar': 'Kalender',

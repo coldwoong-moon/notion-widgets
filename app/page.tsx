@@ -7,6 +7,7 @@ import { useSystemTheme, lightTheme, darkTheme } from '@/hooks/useSystemTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Locale, locales, localeNames } from '@/lib/i18n';
 import { AdBanner } from '@/components/GoogleAdsense';
+import { LayoutGrid, Moon, Sun, Laptop } from 'lucide-react';
 
 type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -164,10 +165,10 @@ export default function Home() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px',
+                color: 'white',
                 boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
               }}>
-                ✨
+                <LayoutGrid size={24} />
               </div>
               <div>
                 <h1 style={{
@@ -209,10 +210,12 @@ export default function Home() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  width: '36px',
+                  height: '36px',
                 }}
                 title={`Theme: ${themeMode}`}
               >
-                {themeMode === 'system' ? '💻' : themeMode === 'light' ? '☀️' : '🌙'}
+                {themeMode === 'system' ? <Laptop size={18} /> : themeMode === 'light' ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
               {/* Language Switcher */}

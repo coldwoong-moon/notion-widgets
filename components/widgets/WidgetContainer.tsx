@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Theme } from '@/types/theme';
 import { NOTION_BORDER_RADIUS } from '@/lib/constants';
 
@@ -16,6 +16,7 @@ interface WidgetContainerProps {
 export function WidgetContainer({ children, theme, notion }: WidgetContainerProps) {
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [isEmbedded, setIsEmbedded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Check if we're embedded in an iframe (Notion)
@@ -27,10 +28,17 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
     }
 
     const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight
+        });
+      } else {
+        setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }
     };
 
     updateDimensions();
@@ -39,12 +47,16 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
     // Use ResizeObserver for better height detection
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { height } = entry.contentRect;
-        setDimensions(prev => ({ ...prev, height }));
+        const { width, height } = entry.contentRect;
+        setDimensions({ width, height });
       }
     });
 
-    resizeObserver.observe(document.body);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    } else {
+      resizeObserver.observe(document.body);
+    }
 
     return () => {
       window.removeEventListener('resize', updateDimensions);
@@ -62,30 +74,34 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
   const aspectRatio = notion.width / notion.height;
 
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      // Only apply aspectRatio when embedded to allow Notion to control the size
-      // When standalone, parent container defines the size via defaultSize
-      ...(isEmbedded && { aspectRatio: `${aspectRatio}` }),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.colors.background,
-      color: theme.colors.primary,
-      fontFamily: theme.typography.fontFamily,
-      padding: padding,
-      boxSizing: 'border-box',
-      overflow: 'hidden',
-      position: 'relative',
-      transition: 'background-color 0.3s ease, color 0.3s ease',
-      containerType: 'size',
-      // Notion-optimized styling
-      borderRadius: isEmbedded ? '0' : NOTION_BORDER_RADIUS,
-      maxWidth: '100%',
-      minHeight: '100%',
-    }}>
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: '100%',
+        // Only apply aspectRatio when embedded to allow Notion to control the size
+        // When standalone, parent container defines the size via defaultSize
+        ...(isEmbedded && { aspectRatio: `${aspectRatio}` }),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.colors.background,
+        color: theme.colors.primary,
+        fontFamily: theme.typography.fontFamily,
+        padding: padding,
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        position: 'relative',
+        transition: 'background-color 0.3s ease, color 0.3s ease',
+        // Remove containerType as we're using JS-based classes
+        // Notion-optimized styling
+        borderRadius: isEmbedded ? '0' : NOTION_BORDER_RADIUS,
+        maxWidth: '100%',
+        minHeight: '100%',
+      }}
+      className={isSmall ? 'container-small' : isMedium ? 'container-medium' : 'container-large'}
+    >
       <style>{`
         * {
           box-sizing: border-box;
@@ -120,88 +136,42 @@ export function WidgetContainer({ children, theme, notion }: WidgetContainerProp
           animation: fadeIn 0.5s ease-out;
         }
         
-        /* Notion-optimized responsive font sizes based on container height */
-        /* Small widgets (< 300px) - typical for compact Notion embeds */
-        @container (max-height: 300px) {
-          .text-xs { font-size: 10px; }
-          .text-sm { font-size: 12px; }
-          .text-base { font-size: 14px; }
-          .text-lg { font-size: 16px; }
-          .text-xl { font-size: 18px; }
-          .text-2xl { font-size: 20px; }
-          .text-3xl { font-size: 24px; }
-          .text-4xl { font-size: 28px; }
-          .text-5xl { font-size: 32px; }
-          .text-6xl { font-size: 36px; }
-        }
+        /* Notion-optimized responsive font sizes based on container height classes */
+        /* Small widgets (< 300px) */
+        .container-small .text-xs { font-size: 10px; line-height: 1.1; }
+        .container-small .text-sm { font-size: 12px; line-height: 1.1; }
+        .container-small .text-base { font-size: 14px; line-height: 1.1; }
+        .container-small .text-lg { font-size: 16px; line-height: 1.1; }
+        .container-small .text-xl { font-size: 18px; line-height: 1.1; }
+        .container-small .text-2xl { font-size: 20px; line-height: 1.1; }
+        .container-small .text-3xl { font-size: 24px; line-height: 1.1; }
+        .container-small .text-4xl { font-size: 26px; line-height: 1.1; }
+        .container-small .text-5xl { font-size: 28px; line-height: 1.1; }
+        .container-small .text-6xl { font-size: 32px; line-height: 1.1; }
         
-        /* Medium widgets (300-450px) - standard Notion embed size */
-        @container (min-height: 300px) and (max-height: 450px) {
-          .text-xs { font-size: 11px; }
-          .text-sm { font-size: 13px; }
-          .text-base { font-size: 15px; }
-          .text-lg { font-size: 18px; }
-          .text-xl { font-size: 20px; }
-          .text-2xl { font-size: 24px; }
-          .text-3xl { font-size: 30px; }
-          .text-4xl { font-size: 36px; }
-          .text-5xl { font-size: 48px; }
-          .text-6xl { font-size: 56px; }
-        }
+        /* Medium widgets (300-450px) */
+        .container-medium .text-xs { font-size: 11px; }
+        .container-medium .text-sm { font-size: 13px; }
+        .container-medium .text-base { font-size: 15px; }
+        .container-medium .text-lg { font-size: 18px; }
+        .container-medium .text-xl { font-size: 20px; }
+        .container-medium .text-2xl { font-size: 24px; }
+        .container-medium .text-3xl { font-size: 30px; }
+        .container-medium .text-4xl { font-size: 36px; }
+        .container-medium .text-5xl { font-size: 48px; }
+        .container-medium .text-6xl { font-size: 56px; }
         
-        /* Large widgets (> 450px) - expanded Notion embeds */
-        @container (min-height: 450px) {
-          .text-xs { font-size: 12px; }
-          .text-sm { font-size: 14px; }
-          .text-base { font-size: 16px; }
-          .text-lg { font-size: 18px; }
-          .text-xl { font-size: 20px; }
-          .text-2xl { font-size: 26px; }
-          .text-3xl { font-size: 32px; }
-          .text-4xl { font-size: 42px; }
-          .text-5xl { font-size: 52px; }
-          .text-6xl { font-size: 64px; }
-        }
-        
-        /* Fallback for browsers without container query support */
-        @media (max-height: 300px) {
-          .text-xs { font-size: 10px; }
-          .text-sm { font-size: 12px; }
-          .text-base { font-size: 14px; }
-          .text-lg { font-size: 16px; }
-          .text-xl { font-size: 18px; }
-          .text-2xl { font-size: 20px; }
-          .text-3xl { font-size: 24px; }
-          .text-4xl { font-size: 28px; }
-          .text-5xl { font-size: 32px; }
-          .text-6xl { font-size: 36px; }
-        }
-        
-        @media (min-height: 300px) and (max-height: 450px) {
-          .text-xs { font-size: 11px; }
-          .text-sm { font-size: 13px; }
-          .text-base { font-size: 15px; }
-          .text-lg { font-size: 18px; }
-          .text-xl { font-size: 20px; }
-          .text-2xl { font-size: 24px; }
-          .text-3xl { font-size: 30px; }
-          .text-4xl { font-size: 36px; }
-          .text-5xl { font-size: 48px; }
-          .text-6xl { font-size: 56px; }
-        }
-        
-        @media (min-height: 450px) {
-          .text-xs { font-size: 12px; }
-          .text-sm { font-size: 14px; }
-          .text-base { font-size: 16px; }
-          .text-lg { font-size: 18px; }
-          .text-xl { font-size: 20px; }
-          .text-2xl { font-size: 26px; }
-          .text-3xl { font-size: 32px; }
-          .text-4xl { font-size: 42px; }
-          .text-5xl { font-size: 52px; }
-          .text-6xl { font-size: 64px; }
-        }
+        /* Large widgets (> 450px) */
+        .container-large .text-xs { font-size: 12px; }
+        .container-large .text-sm { font-size: 14px; }
+        .container-large .text-base { font-size: 16px; }
+        .container-large .text-lg { font-size: 18px; }
+        .container-large .text-xl { font-size: 20px; }
+        .container-large .text-2xl { font-size: 26px; }
+        .container-large .text-3xl { font-size: 32px; }
+        .container-large .text-4xl { font-size: 42px; }
+        .container-large .text-5xl { font-size: 52px; }
+        .container-large .text-6xl { font-size: 64px; }
       `}</style>
       <div className="widget-content" style={{ width: '100%', maxWidth: '100%' }}>
         {children}

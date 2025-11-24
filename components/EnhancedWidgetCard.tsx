@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Widget, Theme } from '@/types/theme';
 import { Locale } from '@/lib/i18n';
 import { t, TranslationKey } from '@/translations';
+import { WidgetCustomizationDialog } from './WidgetCustomizationDialog';
 
 interface EnhancedWidgetCardProps {
   widget: Widget;
@@ -17,6 +18,7 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+  const [isCustomizing, setIsCustomizing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const widgetUrl = `${baseUrl}/widget/${widget.id}?theme=${theme.id}&lang=${locale}`;
@@ -190,14 +192,15 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
           gap: '10px',
         }}>
           <span style={{ 
-            fontSize: '24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             width: '36px',
             height: '36px',
+            padding: '8px',
             backgroundColor: '#f3f4f6',
             borderRadius: '8px',
+            color: '#4b5563', // gray-600
           }}>
             {widget.icon}
           </span>
@@ -290,9 +293,12 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
             </span>
           </button>
           
-          {/* Preview button - Secondary action */}
+          {/* Customize & Preview button - Secondary action */}
           <button
-            onClick={() => window.open(widgetUrl, '_blank')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCustomizing(true);
+            }}
             style={{
               padding: '12px',
               backgroundColor: '#f3f4f6',
@@ -313,11 +319,11 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
               e.currentTarget.style.backgroundColor = '#f3f4f6';
               e.currentTarget.style.color = '#6b7280';
             }}
-            aria-label="Preview widget in new tab"
+            aria-label="Customize and preview widget"
             title={t('gallery.preview', locale)}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 2H4C2.89543 2 2 2.89543 2 4V12C2 13.1046 2.89543 14 4 14H12C13.1046 14 14 13.1046 14 12V10M10 2H14M14 2V6M14 2L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M12 2l2 2m-2-2l-9 9 2 2 9-9m-11 11h2l-2-2v2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
         </footer>
@@ -333,6 +339,16 @@ export function EnhancedWidgetCard({ widget, theme, baseUrl, locale = 'en' }: En
           pointerEvents: 'none',
         }} />
       )}
+
+      {/* Customization Dialog */}
+      <WidgetCustomizationDialog
+        widget={widget}
+        theme={theme}
+        baseUrl={baseUrl}
+        locale={locale}
+        open={isCustomizing}
+        onOpenChange={setIsCustomizing}
+      />
     </article>
   );
 }
